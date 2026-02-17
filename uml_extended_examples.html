@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UML Step-by-Step · Course · E-Commerce · Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0e0b1a;
+      --surf:    #17132a;
+      --surf2:   #1f1a35;
+      --border:  #2e2750;
+      --accent:  #a78bfa;
+      --accent2: #34d399;
+      --warn:    #f59e0b;
+      --text:    #e8e0ff;
+      --dim:     #7b6fa8;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+
+    /* header */
+    header{
+      background:linear-gradient(135deg,#0e0b1a 0%,#1a1030 100%);
+      border-bottom:1px solid var(--border);
+      padding:2rem 2.5rem 1.6rem;
+      position:relative;overflow:hidden;
+    }
+    header::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;
+      background:radial-gradient(circle,rgba(167,139,250,.07) 0%,transparent 70%);pointer-events:none}
+    .hdr-mono{font-family:'JetBrains Mono',monospace;font-size:.67rem;letter-spacing:.22em;
+      text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
+    h1{font-size:clamp(1.5rem,4vw,2.3rem);font-weight:700;color:#fff;line-height:1.15}
+    h1 span{color:var(--accent)}
+    .hdr-sub{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--dim);margin-top:.4rem}
+    .hdr-pills{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.95rem}
+    .pill{font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.2rem .6rem;
+      border-radius:20px;border:1px solid var(--border);color:var(--dim);transition:all .2s;cursor:pointer}
+    .pill.active{border-color:var(--accent);color:var(--accent);background:rgba(167,139,250,.08)}
+
+    /* tab nav */
+    .tab-nav{display:flex;background:var(--surf);border-bottom:1px solid var(--border);overflow-x:auto}
+    .tab-btn{padding:.85rem 1.5rem;background:none;border:none;color:var(--dim);
+      font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;
+      position:relative;white-space:nowrap;display:flex;align-items:center;gap:.5rem;transition:color .2s}
+    .tab-btn:hover{color:var(--text)}
+    .tab-btn.active{color:var(--accent)}
+    .tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent)}
+    .tab-num{width:20px;height:20px;border-radius:50%;background:var(--border);
+      font-family:'JetBrains Mono',monospace;font-size:.66rem;display:inline-flex;
+      align-items:center;justify-content:center;transition:all .2s}
+    .tab-btn.active .tab-num{background:var(--accent);color:#000;font-weight:700}
+
+    /* layout */
+    .layout{display:grid;grid-template-columns:265px 1fr;flex:1}
+
+    /* sidebar */
+    .sidebar{background:var(--surf);border-right:1px solid var(--border);padding:1.4rem .9rem;overflow-y:auto}
+    .sidebar-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--dim);padding:0 .4rem;margin-bottom:.7rem}
+    .step-list{display:flex;flex-direction:column;gap:.18rem}
+    .step-item{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem .6rem;border-radius:8px;
+      cursor:pointer;border:1px solid transparent;transition:all .18s}
+    .step-item:hover{background:var(--surf2)}
+    .step-item.active{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.22)}
+    .step-item.done .step-dot{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.4);color:var(--accent2)}
+    .step-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--dim);
+      flex-shrink:0;margin-top:1px;transition:all .18s}
+    .step-item.active .step-dot{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+    .step-name{font-size:.78rem;font-weight:600;color:var(--dim);line-height:1.35;transition:color .18s}
+    .step-item.active .step-name{color:var(--accent)}
+    .step-item.done .step-name{color:rgba(52,211,153,.75)}
+
+    /* content */
+    .content{padding:1.75rem;overflow:auto}
+    .progress-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:1.6rem}
+    .progress-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .4s ease}
+
+    .step-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(167,139,250,.08);
+      border:1px solid rgba(167,139,250,.22);color:var(--accent);font-family:'JetBrains Mono',monospace;
+      font-size:.66rem;padding:.18rem .55rem;border-radius:20px;margin-bottom:.55rem}
+    .step-title{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.8rem;line-height:1.25}
+    .step-expl{background:var(--surf);border:1px solid var(--border);border-left:3px solid var(--accent2);
+      border-radius:8px;padding:1.1rem 1.3rem;font-size:.85rem;line-height:1.78;color:var(--dim);margin-bottom:1.15rem}
+    .step-expl strong{color:var(--text)}
+    .step-expl code{font-family:'JetBrains Mono',monospace;background:rgba(52,211,153,.08);
+      color:var(--accent2);padding:.1rem .28rem;border-radius:3px;font-size:.8rem}
+
+    .uml-key{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:1.1rem}
+    .key-item{display:flex;align-items:center;gap:.32rem;font-family:'JetBrains Mono',monospace;
+      font-size:.66rem;color:var(--dim);background:var(--surf);border:1px solid var(--border);
+      padding:.18rem .5rem;border-radius:4px}
+
+    /* diagram card */
+    .diagram-card{background:#fff;border-radius:12px;overflow:auto;
+      box-shadow:0 8px 50px rgba(0,0,0,.45);padding:1.15rem}
+    .diagram-card svg{display:block;max-width:100%;height:auto}
+
+    /* nav */
+    .step-nav{display:flex;align-items:center;gap:.7rem;margin-top:1.15rem}
+    .nav-btn{padding:.62rem 1.35rem;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;
+      font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .nav-btn.prev{background:var(--surf2);color:var(--dim);border:1px solid var(--border)}
+    .nav-btn.prev:hover:not(:disabled){color:var(--text)}
+    .nav-btn.next{background:var(--accent);color:#000}
+    .nav-btn.next:hover:not(:disabled){background:#c4b5fd;transform:translateX(2px)}
+    .nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
+    .prog-text{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--dim)}
+
+    @media(max-width:700px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{border-right:none;border-bottom:1px solid var(--border)}
+      .step-list{flex-direction:row;overflow-x:auto;padding-bottom:.5rem}
+      .step-item{flex-direction:column;min-width:100px;text-align:center;align-items:center}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-mono">// UML Step-by-Step · Three Diagrams</div>
+  <h1>UML Diagrams: <span>Extended Examples</span></h1>
+  <div class="hdr-sub">University · E-Commerce · Library — built step by step</div>
+  <div class="hdr-pills">
+    <span class="pill active" onclick="switchTab('class',0)">Q1: Class Diagram</span>
+    <span class="pill" onclick="switchTab('seq',1)">Q2: Sequence Diagram</span>
+    <span class="pill" onclick="switchTab('uc',2)">Q3: Use Case Diagram</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('class',0)"><span class="tab-num">1</span>Class Diagram</button>
+  <button class="tab-btn" onclick="switchTab('seq',1)"><span class="tab-num">2</span>Sequence Diagram</button>
+  <button class="tab-btn" onclick="switchTab('uc',2)"><span class="tab-num">3</span>Use Case Diagram</button>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">Steps</div>
+    <div class="step-list" id="step-list"></div>
+  </aside>
+  <main class="content">
+    <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+    <div class="step-badge" id="sbadge"></div>
+    <h2 class="step-title" id="stitle"></h2>
+    <div class="step-expl" id="sexpl"></div>
+    <div class="uml-key" id="skeys"></div>
+    <div class="diagram-card"><div id="ssvg"></div></div>
+    <div class="step-nav">
+      <button class="nav-btn prev" id="bprev" onclick="prevStep()">← Previous</button>
+      <button class="nav-btn next" id="bnext" onclick="nextStep()">Next Step →</button>
+      <span class="prog-text" id="ptext"></span>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ================================================================
+   COLOUR PALETTE (for light-background SVGs)
+   ================================================================ */
+const C = {
+  hdr:'#2d1b69', body:'#f5f0ff', border:'#7c3aed', hi:'#fffbe6', hiB:'#d97706',
+  assoc:'#555', inh:'#2d1b69', ret:'#0066cc', err:'#cc2222',
+  altF:'#f0f7ff', altB:'#3b82f6',
+  loopF:'#fffce8', loopB:'#ca8a04',
+  fragF:'#f0fff7', fragB:'#059669',
+  ucF:'#eef2ff', ucB:'#4f46e5',
+  sys:'#2d1b69',
+  incF:'#f0fdf4', incB:'#16a34a',
+  extF:'#fff7ed', extB:'#ea580c',
+  seqBx:'#2d1b69',
+};
+
+/* ── SVG primitives ── */
+const tx = (x,y,s,{a='middle',f='#1a0a3a',fs=11,fw='normal',ff='JetBrains Mono,monospace',fi=false}={}) =>
+  `<text x="${x}" y="${y}" text-anchor="${a}" font-family="${ff}" font-size="${fs}" fill="${f}" font-weight="${fw}" font-style="${fi?'italic':'normal'}">${s}</text>`;
+
+const ln = (x1,y1,x2,y2,col='#444',sw=1.5,dash='') =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+
+/* class box — returns {svg, h} */
+function cb(x,y,w,name,attrs,methods,hl=false,stereo='') {
+  const lh=17, pad=7, nh=stereo?42:32;
+  const ah = attrs.length   ? pad*2 + attrs.length*lh   : 20;
+  const mh = methods.length ? pad*2 + methods.length*lh : 0;
+  const h  = nh + ah + mh;
+  const bg = hl ? C.hi : C.body, br = hl ? C.hiB : C.border;
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg}" stroke="${br}" stroke-width="1.5" rx="2"/>`;
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${nh}" fill="${C.hdr}" rx="2"/>`;
+  s += `<rect x="${x}" y="${y+nh-2}" width="${w}" height="2" fill="${C.hdr}"/>`;
+  if(stereo) s += tx(x+w/2, y+16, stereo, {f:'#d8b4fe',fs:9});
+  s += tx(x+w/2, y+(stereo?29:21), name, {f:'#fff',fs:12,fw:'bold'});
+  s += ln(x, y+nh+ah, x+w, y+nh+ah, br, 1);
+  attrs.forEach((a,i) => s += tx(x+7, y+nh+pad+(i+1)*lh-4, a, {a:'start',fs:10}));
+  methods.forEach((m,i) => s += tx(x+7, y+nh+ah+pad+(i+1)*lh-4, m, {a:'start',fs:10}));
+  return {svg:s, h};
+}
+function bh(attrs,methods,stereo=false) {
+  const lh=17,pad=7,nh=stereo?42:32;
+  const ah=attrs.length?pad*2+attrs.length*lh:20;
+  const mh=methods.length?pad*2+methods.length*lh:0;
+  return nh+ah+mh;
+}
+
+/* hollow-triangle inheritance arrow */
+function inhArr(fx,fy,tx2,ty2) {
+  const sz=11, dx=tx2-fx, dy=ty2-fy, len=Math.sqrt(dx*dx+dy*dy);
+  const ux=dx/len, uy=dy/len, px=-uy, py=ux;
+  const ex=tx2-ux*sz, ey=ty2-uy*sz;
+  return `${ln(fx,fy,ex,ey,C.inh,1.5)}<polygon points="${tx2},${ty2} ${ex+px*(sz/2)},${ey+py*(sz/2)} ${ex-px*(sz/2)},${ey-py*(sz/2)}" fill="white" stroke="${C.inh}" stroke-width="1.5"/>`;
+}
+
+/* dashed arrow with label (for sequence) */
+function msgArr(x1,y1,x2,y2,label,isDash,col='#222',lbOff=0) {
+  const a=Math.atan2(y2-y1,x2-x1), al=10, aa=Math.PI/6;
+  const p1x=x2-al*Math.cos(a-aa), p1y=y2-al*Math.sin(a-aa);
+  const p2x=x2-al*Math.cos(a+aa), p2y=y2-al*Math.sin(a+aa);
+  const mx=(x1+x2)/2+lbOff, my=y1-5;
+  return `${ln(x1,y1,x2,y2,col,1.5,isDash?'5,3':'')}
+    ${ln(x2,y2,p1x,p1y,col,1.5)}${ln(x2,y2,p2x,p2y,col,1.5)}
+    ${tx(mx,my,label,{fs:9.5,fw:'500',f:col,ff:'JetBrains Mono,monospace'})}`;
+}
+
+/* combined fragment */
+function frag(x,y,w,h,kw,guard,bg2,br2,alpha=0.88) {
+  const kl=kw.length*7.5+14;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg2}" stroke="${br2}" stroke-width="1.5" rx="2" opacity="${alpha}"/>
+    <rect x="${x}" y="${y}" width="${kl}" height="17" fill="${br2}" rx="2"/>
+    ${tx(x+kl/2,y+12,kw,{f:'#fff',fs:9.5,fw:'bold',ff:'JetBrains Mono,monospace'})}
+    ${guard?tx(x+kl+6,y+12,'['+guard+']',{a:'start',fs:9,f:'#444',ff:'JetBrains Mono,monospace'}):''}`;
+}
+
+/* stick figure */
+function stick(cx,cy,label) {
+  const c=C.sys;
+  return `<circle cx="${cx}" cy="${cy}" r="13" fill="none" stroke="${c}" stroke-width="2"/>
+    ${ln(cx,cy+13,cx,cy+44,c,2)}${ln(cx-20,cy+24,cx+20,cy+24,c,2)}
+    ${ln(cx,cy+44,cx-16,cy+64,c,2)}${ln(cx,cy+44,cx+16,cy+64,c,2)}
+    ${tx(cx,cy+80,label,{f:c,fs:11,fw:'bold',ff:'DM Sans,sans-serif'})}`;
+}
+
+/* use case ellipse */
+function uc(cx,cy,rx,ry,lines,hl=false) {
+  const bg=hl?C.hi:C.ucF, br=hl?C.hiB:C.ucB;
+  let s=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${bg}" stroke="${br}" stroke-width="1.5"/>`;
+  const dy=(lines.length-1)*7;
+  lines.forEach((l,i)=>{ s+=tx(cx,cy-(dy/2)+(i*14)+4,l,{fs:10,fw:'bold',f:'#1a1040',ff:'DM Sans,sans-serif'}); });
+  return s;
+}
+
+/* dashed arrow for include/extend (use-case) */
+function ucRel(x1,y1,x2,y2,label,col) {
+  const a=Math.atan2(y2-y1,x2-x1),al=9,aa=Math.PI/7;
+  const p1x=x2-al*Math.cos(a-aa),p1y=y2-al*Math.sin(a-aa);
+  const p2x=x2-al*Math.cos(a+aa),p2y=y2-al*Math.sin(a+aa);
+  return `${ln(x1,y1,x2,y2,col,1.3,'5,3')}
+    ${ln(x2,y2,p1x,p1y,col,1.3)}${ln(x2,y2,p2x,p2y,col,1.3)}
+    ${tx((x1+x2)/2,(y1+y2)/2-6,'«'+label+'»',{fs:9,fi:true,f:col,ff:'DM Sans,sans-serif'})}`;
+}
+
+/* ================================================================
+   CLASS DIAGRAM — University Course Management
+   ================================================================ */
+function buildClass(step) {
+  const W=760, H=660;
+
+  // positions
+  const IX=20, IY=30, IW=190;
+  const IA=['- facultyId : String','- name : String','- department : String'];
+  const IM=['+ getCoursesTaught() : List'];
+
+  const SX=540, SY=30, SW=195;
+  const SA=['- studentId : String','- name : String','- email : String'];
+  const SM=['+ getEnrolledCourses() : List'];
+
+  const CX=255, CY=230, CW=240;
+  const CA=['- courseCode : String','- title : String','- maxCapacity : int'];
+  const CMeth=['+ enrollStudent() : void','+ dropStudent() : void'];
+
+  const SUB_Y=470;
+  const LX=10,  LW=215;
+  const BBX=245,BBW=230;
+  const SemX=490,SemW=260;
+
+  const LA=['- lectureHall : String'];   const LM=['+ checkAvailableSeats() : int'];
+  const BBA=['- equipmentRequired : String']; const BBM=['+ reserveLabEquipment() : void'];
+  const SemA=['- readingList : List'];   const SemM=['+ displayReadingList() : void'];
+
+  const ih = bh(IA,IM), sh = bh(SA,SM), ch = bh(CA,CMeth);
+
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#f9f7ff"/>`;
+
+  // Step 1: Instructor
+  s += cb(IX,IY,IW,'Instructor',IA, step>=2?IM:[], step===1).svg;
+
+  // Step 2: Student
+  if(step>=2) s += cb(SX,SY,SW,'Student',SA,SM,step===2).svg;
+
+  // Step 3: Course base class
+  if(step>=3) s += cb(CX,CY,CW,'Course',CA,CMeth,step===3).svg;
+
+  // Step 4: Association lines Instructor→Course and Student→Course
+  if(step>=4) {
+    const hl=step===4;
+    // Instructor bottom → Course left
+    const ibx=IX+IW/2, iby=IY+ih;
+    const clx=CX, cly=CY+ch/2;
+    s+=ln(ibx,iby,ibx,iby+40,C.assoc,1.5);
+    s+=ln(ibx,iby+40,clx,cly,C.assoc,1.5);
+    s+=tx(ibx+6,iby+14,'1',{a:'start',fs:11,fw:'bold'});
+    s+=tx(clx-22,cly-8,'1..*',{a:'start',fs:11,fw:'bold'});
+    s+=tx((ibx+clx)/2,(iby+40+cly)/2+2,'teaches',{fs:9.5,fi:true,f:'#777'});
+
+    // Student bottom → Course right
+    const sbx=SX+SW/2, sby=SY+sh;
+    const crx=CX+CW, cry=CY+ch/2;
+    s+=ln(sbx,sby,sbx,sby+40,C.assoc,1.5);
+    s+=ln(sbx,sby+40,crx,cry,C.assoc,1.5);
+    s+=tx(sbx+6,sby+14,'1..*',{a:'start',fs:11,fw:'bold'});
+    s+=tx(crx+4,cry-8,'*..*',{a:'start',fs:11,fw:'bold'});
+    s+=tx((sbx+crx)/2,(sby+40+cry)/2+2,'enrolls in',{fs:9.5,fi:true,f:'#777'});
+  }
+
+  // Step 5: Subclasses (just attributes, highlight)
+  if(step>=5) {
+    const hl=step===5;
+    s+=cb(LX,  SUB_Y,LW,  'Lecture', LA, step>=6?LM:[],   hl).svg;
+    s+=cb(BBX, SUB_Y,BBW, 'Lab',     BBA,step>=6?BBM:[], hl).svg;
+    s+=cb(SemX,SUB_Y,SemW,'Seminar', SemA,step>=6?SemM:[], hl).svg;
+  }
+
+  // Step 6: Inheritance arrows
+  if(step>=6) {
+    const cbot=CY+ch, mergeY=cbot+60;
+    const c1=LX+LW/2, c2=BBX+BBW/2, c3=SemX+SemW/2, cx2=CX+CW/2;
+    s+=ln(c1,SUB_Y,c1,mergeY,C.inh,1.5); s+=ln(c2,SUB_Y,c2,mergeY,C.inh,1.5); s+=ln(c3,SUB_Y,c3,mergeY,C.inh,1.5);
+    s+=ln(c1,mergeY,c3,mergeY,C.inh,1.5);
+    s+=ln(cx2,mergeY,cx2,cbot,C.inh,1.5);
+    s+=inhArr(cx2,mergeY,cx2,cbot);
+    s+=tx(cx2+8,mergeY-6,'«extends»',{fs:9,fi:true,f:'#777'});
+
+    // redraw subclasses on top (full methods, no highlight)
+    s+=cb(LX,  SUB_Y,LW,  'Lecture', LA, LM,  false).svg;
+    s+=cb(BBX, SUB_Y,BBW, 'Lab',     BBA,BBM, false).svg;
+    s+=cb(SemX,SUB_Y,SemW,'Seminar', SemA,SemM,false).svg;
+
+    // redraw assoc lines on top
+    const ih2=bh(IA,IM), sh2=bh(SA,SM);
+    const ibx=IX+IW/2, iby=IY+ih2, clx=CX, cly=CY+bh(CA,CMeth)/2;
+    s+=ln(ibx,iby,ibx,iby+40,C.assoc,1.5); s+=ln(ibx,iby+40,clx,cly,C.assoc,1.5);
+    const sbx=SX+SW/2, sby=SY+sh2, crx=CX+CW, cry=CY+bh(CA,CMeth)/2;
+    s+=ln(sbx,sby,sbx,sby+40,C.assoc,1.5); s+=ln(sbx,sby+40,crx,cry,C.assoc,1.5);
+  }
+
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ================================================================
+   SEQUENCE DIAGRAM — E-Commerce Secure Login + Order
+   ================================================================ */
+function buildSeq(step) {
+  const W=800, H=620;
+  const Xs=[75,195,345,490,660];
+  const labels=[':User',':Web Server',':Auth Service',':User DB',':Payment Gwy'];
+  const BW=108, BH=36, llEnd=600;
+
+  let s=`<rect x="0" y="0" width="${W}" height="${H}" fill="#f9f7ff"/>`;
+
+  // lifelines always
+  Xs.forEach((cx,i)=>{
+    const lx=cx-BW/2;
+    const show = step>=1 && (step===1 || i<=3 || (step>=4 && i===4));
+    const dim  = step===1 ? false : i>2 && step<3;
+    const col  = dim ? '#aaa' : C.seqBx;
+    const lc   = dim ? '#bbb' : C.border;
+    if(i<=3 || step>=4) {
+      s+=`<rect x="${lx}" y="18" width="${BW}" height="${BH}" fill="${col}" rx="3" stroke="${lc}" stroke-width="1.5"/>`;
+      s+=tx(cx,18+25,labels[i],{f:'#fff',fs:9.5,fw:'bold',ff:'JetBrains Mono,monospace'});
+      s+=ln(cx,18+BH,cx,llEnd,lc,1.5,'5,3');
+    }
+  });
+
+  if(step===1) return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+
+  if(step===2) {
+    // login request chain
+    s+=msgArr(Xs[0],110,Xs[1],110,'enterCredentials(user, pass)',false);
+    s+=msgArr(Xs[1],145,Xs[2],145,'validateCredentials()',false);
+    s+=msgArr(Xs[2],180,Xs[3],180,'queryUser()',false);
+    s+=msgArr(Xs[3],215,Xs[2],215,'userData',true,C.ret);
+  }
+
+  if(step===3) {
+    // loop + alt
+    s+=frag(18,80,754,290,'loop','until valid credentials',C.loopF,C.loopB,0.9);
+    s+=frag(30,100,730,135,'alt','credentials valid',C.altF,C.altB,0.9);
+    s+=ln(30,235,760,235,C.altB,1,'5,4');
+    s+=tx(40,250,'[credentials invalid]',{a:'start',fs:9,f:'#444',ff:'JetBrains Mono,monospace'});
+
+    s+=msgArr(Xs[0],125,Xs[1],125,'enterCredentials(user, pass)',false);
+    s+=msgArr(Xs[1],152,Xs[2],152,'validateCredentials()',false);
+    s+=msgArr(Xs[2],178,Xs[3],178,'queryUser()',false);
+    s+=msgArr(Xs[3],204,Xs[2],204,'userData',true,C.ret);
+    s+=msgArr(Xs[2],225,Xs[1],225,'Login Success',true,C.fragB);
+    s+=msgArr(Xs[1],340,Xs[0],340,'redirectToCart()',true,'#059669');
+    s+=msgArr(Xs[2],270,Xs[1],270,'Login Failed',true,C.err);
+    s+=msgArr(Xs[1],295,Xs[0],295,'displayError()',true,C.err);
+  }
+
+  if(step>=4) {
+    // full diagram
+    s+=frag(18,78,754,295,'loop','until valid credentials',C.loopF,C.loopB,0.9);
+    s+=frag(30,98,730,137,'alt','credentials valid',C.altF,C.altB,0.9);
+    s+=ln(30,235,760,235,C.altB,1,'5,4');
+    s+=tx(40,248,'[credentials invalid]',{a:'start',fs:9,f:'#444',ff:'JetBrains Mono,monospace'});
+
+    s+=msgArr(Xs[0],123,Xs[1],123,'enterCredentials(user, pass)',false);
+    s+=msgArr(Xs[1],149,Xs[2],149,'validateCredentials()',false);
+    s+=msgArr(Xs[2],174,Xs[3],174,'queryUser()',false);
+    s+=msgArr(Xs[3],200,Xs[2],200,'userData',true,C.ret);
+    s+=msgArr(Xs[2],222,Xs[1],222,'Login Success',true,C.fragB);
+    s+=msgArr(Xs[1],340,Xs[0],340,'redirectToCart()',true,'#059669');
+    s+=msgArr(Xs[2],268,Xs[1],268,'Login Failed',true,C.err);
+    s+=msgArr(Xs[1],292,Xs[0],292,'displayError()',true,C.err);
+
+    // order flow
+    s+=msgArr(Xs[0],390,Xs[1],390,'placeOrder(cartId)',false);
+    s+=msgArr(Xs[1],422,Xs[4],422,'processPayment(amount)',false);
+    s+=msgArr(Xs[4],455,Xs[1],455,'transactionConfirmed',true,'#059669');
+    s+=msgArr(Xs[1],485,Xs[0],485,'displayOrderConfirmed()',true,'#059669');
+
+    if(step===5){
+      // highlight order section
+      s+=`<rect x="18" y="375" width="754" height="135" fill="rgba(5,150,105,.04)" stroke="#059669" stroke-width="1.5" stroke-dasharray="6,3" rx="3"/>`;
+      s+=tx(30,370,'Order Flow',{a:'start',fs:9.5,fw:'bold',f:'#059669',ff:'JetBrains Mono,monospace'});
+    }
+  }
+
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ================================================================
+   USE CASE DIAGRAM — Library Management System
+   ================================================================ */
+function buildUC(step) {
+  const W=750, H=530;
+  const SX=115,SY=20,SW=510,SH=470;
+  const libX=48,  libY=120;
+  const memX=700, memY=200;
+
+  // use cases: cx, cy, rx, ry, lines
+  const UCs_lib = [
+    {cx:265,cy:95,  rx:88,ry:28,lines:['Register New Member']},
+    {cx:445,cy:95,  rx:80,ry:28,lines:['Manage Inventory']},
+    {cx:360,cy:195, rx:88,ry:28,lines:['Generate Reports']},
+  ];
+  const UCs_mem = [
+    {cx:265,cy:295, rx:80,ry:28,lines:['Search for a Book']},
+    {cx:465,cy:295, rx:80,ry:28,lines:['View Account','Details']},
+    {cx:265,cy:400, rx:80,ry:28,lines:['Borrow a Book']},
+    {cx:465,cy:400, rx:80,ry:28,lines:['Return a Book']},
+  ];
+  // extend use cases
+  const UCs_ext = [
+    {cx:265,cy:95+145, rx:65,ry:25,lines:['Add New Book'], hidden:true},  // extends Manage Inventory
+    {cx:445,cy:95+145, rx:65,ry:25,lines:['Remove Book'],  hidden:true},
+  ];
+  const UC_inc = {cx:465,cy:480, rx:80,ry:25,lines:['Check Member','Status']};
+
+  let s=`<rect x="0" y="0" width="${W}" height="${H}" fill="#f9f7ff"/>`;
+
+  // system boundary
+  s+=`<rect x="${SX}" y="${SY}" width="${SW}" height="${SH}" fill="${step===1?'#fffce8':'#f3f0ff'}" stroke="${step===1?C.hiB:C.ucB}" stroke-width="2" rx="4"/>`;
+  s+=tx(SX+SW/2,SY+22,'Library Management System',{fs:13.5,fw:'bold',f:C.sys,ff:'DM Sans,sans-serif'});
+
+  if(step>=2) {
+    s+=stick(libX,libY,'Librarian');
+    s+=stick(memX,memY,'Member');
+  }
+
+  if(step>=3) {
+    UCs_lib.forEach(u=>s+=uc(u.cx,u.cy,u.rx,u.ry,u.lines,step===3));
+  }
+
+  if(step>=4) {
+    UCs_mem.forEach(u=>s+=uc(u.cx,u.cy,u.rx,u.ry,u.lines,step===4));
+  }
+
+  if(step>=5) {
+    // librarian associations
+    const lbx=libX, lby=libY+44;
+    UCs_lib.forEach(u=>s+=ln(lbx,lby,u.cx-u.rx,u.cy,C.ucB,1.3));
+
+    // member associations
+    const mbx=memX, mby=memY+44;
+    UCs_mem.forEach(u=>s+=ln(mbx,mby,u.cx+u.rx,u.cy,C.ucB,1.3));
+  }
+
+  if(step>=6) {
+    // include: Borrow a Book → Check Member Status
+    s+=uc(UC_inc.cx,UC_inc.cy,UC_inc.rx,UC_inc.ry,UC_inc.lines,false);
+    s+=ucRel(265,400+28,UC_inc.cx,UC_inc.cy-UC_inc.ry,'include',C.incB);
+
+    // extend: Manage Inventory ← Add New Book, Remove Book
+    const miCX=445, miCY=95;
+    s+=uc(265,240,65,25,['Add New Book'],false);
+    s+=uc(445,240,65,25,['Remove Book'],false);
+    s+=ucRel(265,240,miCX-80,miCY+28,'extend',C.extB);
+    s+=ucRel(445,240,miCX,miCY+28,'extend',C.extB);
+  }
+
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ================================================================
+   STEP DATA
+   ================================================================ */
+const DIAGRAMS = {
+  class: {
+    tabIdx: 0,
+    steps: [
+      {
+        title: 'Define the Instructor Class',
+        expl: `<strong>We begin with the Instructor class</strong> — the entity that drives course delivery.<br><br>
+In UML, a class rectangle is divided into three horizontal sections:<br>
+• <strong>Top (name)</strong>: bold, centred class name<br>
+• <strong>Middle (attributes)</strong>: data stored in each instance<br>
+• <strong>Bottom (methods)</strong>: behaviour the class exposes<br><br>
+The Instructor holds:<br>
+• <code>- facultyId : String</code> — a private unique faculty identifier<br>
+• <code>- name : String</code> — the instructor's name<br>
+• <code>- department : String</code> — the academic department they belong to<br><br>
+One public method <code>+ getCoursesTaught() : List</code> allows the system to retrieve which courses this instructor is assigned to.`,
+        keys:[{i:'▭',l:'class rectangle'},{i:'-',l:'private'},{i:'+',l:'public'},{i:':T',l:'type annotation'}],
+        svg:buildClass(1)
+      },
+      {
+        title: 'Add the Student Class',
+        expl: `<strong>The Student class represents a university student enrolled in courses.</strong><br><br>
+A Student's attributes capture their identity:<br>
+• <code>- studentId : String</code><br>
+• <code>- name : String</code><br>
+• <code>- email : String</code><br><br>
+The method <code>+ getEnrolledCourses() : List</code> provides the student's own view of their schedule.<br><br>
+Placing Student on the <em>right</em> and Instructor on the <em>left</em> gives us clean space in the centre for the <strong>Course</strong> class, which both will relate to — added next.`,
+        keys:[{i:'left',l:'Instructor (supply side)'},{i:'right',l:'Student (demand side)'}],
+        svg:buildClass(2)
+      },
+      {
+        title: 'Introduce the Course Base Class',
+        expl: `<strong>Course is the central entity that connects Instructor and Student.</strong><br><br>
+Because three specialised course types (Lecture, Lab, Seminar) share common structure, we model a general <strong>Course base class</strong> first:<br>
+• <code>- courseCode : String</code> — unique identifier, e.g. CS101<br>
+• <code>- title : String</code><br>
+• <code>- maxCapacity : int</code><br><br>
+Two core operations:<br>
+• <code>+ enrollStudent() : void</code> — adds a student to the roster<br>
+• <code>+ dropStudent() : void</code> — removes a student<br><br>
+These methods will be <em>inherited</em> by all three course subtypes without needing to be redeclared.`,
+        keys:[{i:'centre',l:'shared entity in centre'},{i:'△',l:'inheritance coming next'}],
+        svg:buildClass(3)
+      },
+      {
+        title: 'Draw the Association Lines',
+        expl: `<strong>Association lines connect classes that hold references to each other at runtime.</strong><br><br>
+Two associations must be modelled:<br><br>
+<strong>Instructor → Course</strong> (<em>teaches</em>):<br>
+• One Instructor teaches <code>1..*</code> courses (one or more)<br>
+• Each Course is taught by exactly <code>1</code> Instructor<br><br>
+<strong>Student ↔ Course</strong> (<em>enrolls in</em>):<br>
+• One Student enrolls in <code>1..*</code> courses<br>
+• A Course can have <code>*..*</code> students — many-to-many<br><br>
+<strong>How to read multiplicity</strong>: the number nearest a class end is the quantity of <em>that</em> class participating. Read from one end to the other: "One Instructor teaches one-or-more Courses."`,
+        keys:[{i:'——',l:'association'},{i:'1',l:'exactly one'},{i:'1..*',l:'one or more'},{i:'*..*',l:'many-to-many'}],
+        svg:buildClass(4)
+      },
+      {
+        title: 'Add the Three Course Subclasses',
+        expl: `<strong>Specialised course types extend the base Course class with unique attributes.</strong><br><br>
+• <strong>Lecture</strong>: <code>- lectureHall : String</code> — the physical room assignment<br>
+• <strong>Lab</strong>: <code>- equipmentRequired : String</code> — lab tools needed<br>
+• <strong>Seminar</strong>: <code>- readingList : List</code> — required texts for discussion<br><br>
+Each subclass <em>inherits</em> all attributes and methods from Course. We show only the <strong>additional</strong> (specialised) members here.<br><br>
+Inheritance arrows will be drawn in the final step to formally establish the parent-child relationships.`,
+        keys:[{i:'add',l:'only new members shown'},{i:'↑',l:'inherit from parent'},{i:'△',l:'arrow added next'}],
+        svg:buildClass(5)
+      },
+      {
+        title: 'Complete: Inheritance Arrows & Subclass Methods',
+        expl: `<strong>A hollow-triangle arrowhead pointing up to Course completes the inheritance hierarchy.</strong><br><br>
+Multiple subclasses share a single merge bar before the arrow — a UML convention to reduce clutter. This represents <em>generalisation</em>.<br><br>
+Each subclass also has its own specialised method:<br>
+• <code>Lecture</code>: <code>+ checkAvailableSeats() : int</code><br>
+• <code>Lab</code>: <code>+ reserveLabEquipment() : void</code><br>
+• <code>Seminar</code>: <code>+ displayReadingList() : void</code><br><br>
+The <strong>complete diagram</strong> now shows: two actors (Instructor, Student) associated with a Course hierarchy of three concrete types, with correct multiplicities throughout.`,
+        keys:[{i:'△',l:'hollow triangle = generalisation'},{i:'↑',l:'points to parent'},{i:'✓',l:'inherited members omitted'}],
+        svg:buildClass(6)
+      }
+    ]
+  },
+
+  seq: {
+    tabIdx: 1,
+    steps: [
+      {
+        title: 'Establish the Five Lifelines',
+        expl: `<strong>A Sequence Diagram begins by identifying every participant in the interaction.</strong><br><br>
+Each <strong>lifeline</strong> has two parts:<br>
+• A <strong>box</strong> at the top labelled <code>:ClassName</code> (colon prefix is UML convention)<br>
+• A <strong>dashed vertical line</strong> running downward — the participant exists for the entire duration shown<br><br>
+This diagram involves five participants:<br>
+1. <code>:User</code> — the human placing the order<br>
+2. <code>:Web Server</code> — the front-end server handling requests<br>
+3. <code>:Auth Service</code> — validates credentials<br>
+4. <code>:User DB</code> — stores user account data<br>
+5. <code>:Payment Gwy</code> — processes payment transactions<br><br>
+<strong>Time flows downward.</strong> The order left-to-right is typically: actor, then system components left to right in call order.`,
+        keys:[{i:'▭',l:'participant box'},{i:'┆',l:'lifeline'},{i:'↓',l:'time direction'}],
+        svg:buildSeq(1)
+      },
+      {
+        title: 'Add the Login Request Chain',
+        expl: `<strong>Messages are drawn as horizontal arrows between lifelines.</strong><br><br>
+<strong>Arrow types:</strong><br>
+• <strong>Solid arrow →</strong> : a request/call being sent forward<br>
+• <strong>Dashed arrow ⇢</strong> : a return value or response flowing back<br><br>
+The initial login attempt chains through multiple participants:<br>
+1. <code>User → Web Server</code>: <code>enterCredentials(user, pass)</code><br>
+2. <code>Web Server → Auth Service</code>: <code>validateCredentials()</code><br>
+3. <code>Auth Service → User DB</code>: <code>queryUser()</code><br>
+4. <code>User DB → Auth Service</code>: <code>userData</code> (return)<br><br>
+Labels on arrows describe the message name and any parameters passed.`,
+        keys:[{i:'→',l:'solid = request'},{i:'⇢',l:'dashed = return'},{i:'()',l:'method call'}],
+        svg:buildSeq(2)
+      },
+      {
+        title: 'Wrap in Loop & Alt Fragments',
+        expl: `<strong>Combined fragments add conditional and repetition logic.</strong><br><br>
+Two fragments are layered here:<br><br>
+<strong><code>loop</code></strong> — the outer box. The entire login attempt repeats <em>until valid credentials are provided</em>. The guard condition is written in the top-left corner.<br><br>
+<strong><code>alt</code></strong> — inside the loop, an alternative fragment models the if/else:<br>
+• Top partition <code>[credentials valid]</code>: Auth Service returns Login Success → Web Server redirects user to cart<br>
+• Bottom partition <code>[credentials invalid]</code>: Auth Service returns Login Failed → Web Server displays an error<br><br>
+Partitions within <code>alt</code> are separated by a <strong>dashed horizontal divider</strong>. Guard conditions always appear in square brackets.`,
+        keys:[{i:'loop',l:'repeat fragment'},{i:'alt',l:'conditional branch'},{i:'[ ]',l:'guard condition'},{i:'- - -',l:'alt partition divider'}],
+        svg:buildSeq(3)
+      },
+      {
+        title: 'Add the Order Placement Flow',
+        expl: `<strong>After a successful login, the user proceeds to place an order.</strong><br><br>
+Post-login interactions occur <em>below</em> the loop fragment (meaning they only happen after the loop exits with valid credentials):<br><br>
+1. <code>User → Web Server</code>: <code>placeOrder(cartId)</code><br>
+2. <code>Web Server → Payment Gateway</code>: <code>processPayment(amount)</code><br>
+3. <code>Payment Gateway → Web Server</code>: <code>transactionConfirmed</code> (return)<br>
+4. <code>Web Server → User</code>: <code>displayOrderConfirmed()</code> (return)<br><br>
+The <strong>Payment Gateway</strong> lifeline only becomes relevant now — an important design insight the Sequence Diagram makes visible.`,
+        keys:[{i:'⇢',l:'return/confirmation'},{i:'↓',l:'happens after loop exits'},{i:'new',l:'Payment Gateway activated'}],
+        svg:buildSeq(4)
+      },
+      {
+        title: 'Complete: Full Annotated Sequence',
+        expl: `<strong>The complete diagram with all interactions and both flows annotated.</strong><br><br>
+The <strong>order flow section</strong> (green outline) is visually separated from the login section to aid readability — this is a common diagramming practice when a sequence has distinct phases.<br><br>
+<strong>Reading the full sequence:</strong><br>
+① Loop: attempt login → chain to DB → return result<br>
+② Alt: success → redirect; failure → show error → retry<br>
+③ After loop: place order → charge payment → confirm<br><br>
+This diagram gives developers a precise, unambiguous script for implementation — every message, every participant, every conditional path is spelled out in time order.`,
+        keys:[{i:'loop',l:'retry login'},{i:'alt',l:'success / failure'},{i:'⇢',l:'return messages'},{i:'✓',l:'complete flow'}],
+        svg:buildSeq(5)
+      }
+    ]
+  },
+
+  uc: {
+    tabIdx: 2,
+    steps: [
+      {
+        title: 'Draw the System Boundary',
+        expl: `<strong>The system boundary is the rectangle that defines what is "inside" the system.</strong><br><br>
+Everything drawn <em>inside</em> the box is functionality the system provides. Everything <em>outside</em> the box represents external actors (people or other systems) that interact with it.<br><br>
+The boundary is labelled at the top with the system name: <strong>Library Management System</strong>.<br><br>
+This is the first thing drawn because it scopes the diagram — you cannot place use cases until you know what system you are modelling.`,
+        keys:[{i:'▭',l:'system boundary = big rectangle'},{i:'top',l:'system name label'},{i:'outside',l:'actors go here (next step)'}],
+        svg:buildUC(1)
+      },
+      {
+        title: 'Place the Actors',
+        expl: `<strong>Actors are placed outside the system boundary as stick figures.</strong><br><br>
+The Library Management System has two actors:<br>
+• <strong>Librarian</strong> (left) — the primary actor who administers the system. Primary actors typically go on the left.<br>
+• <strong>Member</strong> (right) — a library patron who borrows books. Secondary actors go on the right.<br><br>
+Actor names appear below the stick figure. The name should describe a <em>role</em>, not a specific person (e.g. "Librarian", not "John Smith").<br><br>
+Actors don't have to be humans — they can be external systems, timers, or devices.`,
+        keys:[{i:'♟',l:'actor = stick figure'},{i:'left',l:'primary (initiates)'},{i:'right',l:'secondary (responds)'}],
+        svg:buildUC(2)
+      },
+      {
+        title: 'Add Librarian Use Cases',
+        expl: `<strong>Use cases appear as labelled ellipses inside the system boundary.</strong><br><br>
+The Librarian interacts with three core use cases:<br>
+• <strong>Register New Member</strong> — onboard a new library patron<br>
+• <strong>Manage Inventory</strong> — oversee the book catalogue (with sub-actions added later)<br>
+• <strong>Generate Reports</strong> — produce usage or overdue reports<br><br>
+Use case names always start with a <strong>verb</strong> (Register, Manage, Generate) — they describe an action the system performs <em>for</em> the actor, not a feature or a module name.<br><br>
+Position them near the Librarian side of the diagram.`,
+        keys:[{i:'◯',l:'use case = ellipse'},{i:'verb',l:'name starts with a verb'},{i:'inside',l:'must be within boundary'}],
+        svg:buildUC(3)
+      },
+      {
+        title: 'Add Member Use Cases',
+        expl: `<strong>The Member interacts with four use cases across two areas of functionality.</strong><br><br>
+• <strong>Search for a Book</strong> — browse the catalogue<br>
+• <strong>View Account Details</strong> — check borrowing history, fines<br>
+• <strong>Borrow a Book</strong> — check out a book (will have an <code>«include»</code> relationship next)<br>
+• <strong>Return a Book</strong> — return a borrowed item<br><br>
+Member use cases are grouped on the right side of the diagram, near the Member actor.<br><br>
+Placing Librarian use cases top-left and Member use cases bottom-right keeps association lines short and the diagram uncluttered.`,
+        keys:[{i:'right',l:'near Member actor'},{i:'group',l:'related cases together'},{i:'next',l:'include/extend coming'}],
+        svg:buildUC(4)
+      },
+      {
+        title: 'Draw Actor-to-Use-Case Associations',
+        expl: `<strong>A plain solid line links each actor to the use cases they initiate.</strong><br><br>
+Unlike class associations, use case associations have <strong>no arrowhead and no multiplicity</strong> — they simply show participation.<br><br>
+• <strong>Librarian</strong> lines connect to: Register New Member, Manage Inventory, Generate Reports<br>
+• <strong>Member</strong> lines connect to: Search for a Book, View Account Details, Borrow a Book, Return a Book<br><br>
+An actor line means: <em>"This actor can trigger this use case."</em><br><br>
+In the final step we add the structural relationships between use cases themselves.`,
+        keys:[{i:'——',l:'actor-to-use-case line'},{i:'no ▶',l:'no arrowhead needed'},{i:'no ×',l:'no multiplicity'}],
+        svg:buildUC(5)
+      },
+      {
+        title: 'Complete: «include» and «extend» Relationships',
+        expl: `<strong>Use case relationships model how use cases depend on or extend each other.</strong><br><br>
+<strong><code>«include»</code></strong> (green dashed arrow, pointing <em>into</em> the included case):<br>
+• <strong>Borrow a Book</strong> <em>always</em> includes <strong>Check Member Status</strong>. Every time a member borrows a book, the system must verify there are no outstanding fees or limits. The included case is <em>mandatory</em>.<br><br>
+<strong><code>«extend»</code></strong> (orange dashed arrow, pointing <em>into</em> the base case):<br>
+• <strong>Add New Book</strong> and <strong>Remove Book</strong> are optional extensions of <strong>Manage Inventory</strong>. The librarian <em>may</em> perform these actions, but is not required to. Extensions are <em>conditional</em>.<br><br>
+Memory trick: <code>include</code> = mandatory sub-step; <code>extend</code> = optional enhancement.`,
+        keys:[{i:'«include»',l:'mandatory sub-step'},{i:'«extend»',l:'optional enhancement'},{i:'⇢',l:'dashed with label'}],
+        svg:buildUC(6)
+      }
+    ]
+  }
+};
+
+/* ================================================================
+   STATE & RENDER
+   ================================================================ */
+let CUR_TAB='class', CUR_STEP=0;
+
+function switchTab(tab,ti) {
+  CUR_TAB=tab; CUR_STEP=0;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===ti));
+  document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('active',i===ti));
+  render();
+}
+function nextStep(){const s=DIAGRAMS[CUR_TAB].steps;if(CUR_STEP<s.length-1){CUR_STEP++;render();}}
+function prevStep(){if(CUR_STEP>0){CUR_STEP--;render();}}
+function goStep(i){CUR_STEP=i;render();}
+
+function render() {
+  const steps=DIAGRAMS[CUR_TAB].steps, step=steps[CUR_STEP], total=steps.length;
+  document.getElementById('sbadge').textContent=`Step ${CUR_STEP+1} of ${total}`;
+  document.getElementById('stitle').innerHTML=step.title;
+  document.getElementById('sexpl').innerHTML=step.expl;
+  document.getElementById('ssvg').innerHTML=step.svg;
+  document.getElementById('pfill').style.width=`${((CUR_STEP+1)/total)*100}%`;
+  document.getElementById('ptext').textContent=`${CUR_STEP+1} / ${total} steps`;
+  document.getElementById('skeys').innerHTML=(step.keys||[]).map(k=>`<div class="key-item"><span>${k.i}</span>${k.l}</div>`).join('');
+  document.getElementById('step-list').innerHTML=steps.map((s,i)=>`
+    <div class="step-item ${i===CUR_STEP?'active':i<CUR_STEP?'done':''}" onclick="goStep(${i})">
+      <div class="step-dot">${i<CUR_STEP?'✓':i+1}</div>
+      <div><div class="step-name">${s.title}</div></div>
+    </div>`).join('');
+  document.getElementById('bprev').disabled=CUR_STEP===0;
+  document.getElementById('bnext').disabled=CUR_STEP===total-1;
+  document.getElementById('bnext').textContent=CUR_STEP===total-1?'✓ Complete':'Next Step →';
+}
+render();
+</script>
+</body>
+</html>
