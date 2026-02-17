@@ -1,854 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UML Step-by-Step · Instagram Admin System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #07101f;
-      --surface: #0d1b2e;
-      --surface2: #162035;
-      --border: #1e3252;
-      --accent: #00c896;
-      --accent2: #3b9eff;
-      --text: #ddeeff;
-      --text-dim: #6a8aaa;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, #07101f 0%, #0b1e3a 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 2.5rem 1.75rem;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      top: -80px; right: -80px;
-      width: 350px; height: 350px;
-      background: radial-gradient(circle, rgba(0,200,150,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hdr-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-    h1 { font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 800; color: #fff; }
-    h1 span { color: var(--accent); }
-    .hdr-sub {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      margin-top: 0.4rem;
-    }
-    .hdr-pills {
-      display: flex; gap: 0.5rem; flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-    .pill {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-    }
-    .pill.active { border-color: var(--accent); color: var(--accent); background: rgba(0,200,150,0.07); }
-
-    /* ── Tab Nav ── */
-    .tab-nav {
-      display: flex;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-    }
-    .tab-btn {
-      padding: 0.9rem 1.6rem;
-      background: none;
-      border: none;
-      color: var(--text-dim);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      position: relative;
-      white-space: nowrap;
-      display: flex; align-items: center; gap: 0.5rem;
-      transition: color 0.2s;
-    }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); }
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px; left: 0; right: 0;
-      height: 2px;
-      background: var(--accent);
-    }
-    .tab-num {
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--border);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
-    .tab-btn.active .tab-num { background: var(--accent); color: #000; font-weight: 700; }
-
-    /* ── Layout ── */
-    .layout {
-      display: grid;
-      grid-template-columns: 270px 1fr;
-      flex: 1;
-    }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      padding: 1.5rem 1rem;
-      overflow-y: auto;
-    }
-    .sidebar-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.62rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      padding: 0 0.4rem;
-      margin-bottom: 0.75rem;
-    }
-    .step-list { display: flex; flex-direction: column; gap: 0.2rem; }
-    .step-item {
-      display: flex; align-items: flex-start; gap: 0.65rem;
-      padding: 0.65rem 0.65rem;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.18s;
-    }
-    .step-item:hover { background: var(--surface2); }
-    .step-item.active {
-      background: rgba(0,200,150,0.07);
-      border-color: rgba(0,200,150,0.2);
-    }
-    .step-item.done .step-dot { background: rgba(0,200,150,0.12); border-color: rgba(0,200,150,0.4); color: var(--accent); }
-    .step-dot {
-      width: 22px; height: 22px; border-radius: 50%;
-      border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem; color: var(--text-dim);
-      flex-shrink: 0; margin-top: 1px;
-      transition: all 0.18s;
-    }
-    .step-item.active .step-dot { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
-    .step-name {
-      font-size: 0.79rem; font-weight: 600;
-      color: var(--text-dim); line-height: 1.35;
-      transition: color 0.18s;
-    }
-    .step-item.active .step-name { color: var(--accent); }
-    .step-item.done .step-name { color: rgba(0,200,150,0.7); }
-
-    /* ── Content ── */
-    .content { padding: 2rem; overflow: auto; }
-
-    .progress-bar {
-      height: 2px; background: var(--border); border-radius: 1px;
-      overflow: hidden; margin-bottom: 1.75rem;
-    }
-    .progress-fill {
-      height: 100%; background: var(--accent); border-radius: 1px;
-      transition: width 0.45s ease;
-    }
-
-    .step-badge {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      background: rgba(0,200,150,0.08);
-      border: 1px solid rgba(0,200,150,0.22);
-      color: var(--accent);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      padding: 0.2rem 0.6rem; border-radius: 20px;
-      margin-bottom: 0.6rem;
-    }
-    .step-title {
-      font-size: 1.35rem; font-weight: 700; color: #fff;
-      margin-bottom: 0.85rem; line-height: 1.25;
-    }
-    .step-expl {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent2);
-      border-radius: 8px;
-      padding: 1.15rem 1.4rem;
-      font-size: 0.86rem; line-height: 1.75;
-      color: var(--text-dim);
-      margin-bottom: 1.25rem;
-    }
-    .step-expl strong { color: var(--text); }
-    .step-expl code {
-      font-family: 'IBM Plex Mono', monospace;
-      background: rgba(59,158,255,0.1);
-      color: var(--accent2);
-      padding: 0.1rem 0.3rem; border-radius: 3px;
-      font-size: 0.82rem;
-    }
-    .uml-key {
-      display: flex; flex-wrap: wrap; gap: 0.4rem;
-      margin-bottom: 1.25rem;
-    }
-    .key-item {
-      display: flex; align-items: center; gap: 0.35rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem; color: var(--text-dim);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.55rem; border-radius: 4px;
-    }
-
-    /* ── Diagram Card ── */
-    .diagram-card {
-      background: #fff;
-      border-radius: 12px;
-      overflow: auto;
-      box-shadow: 0 8px 50px rgba(0,0,0,0.4);
-      padding: 1.25rem;
-    }
-    .diagram-card svg { display: block; max-width: 100%; height: auto; }
-
-    /* ── Step nav ── */
-    .step-nav {
-      display: flex; align-items: center; gap: 0.75rem;
-      margin-top: 1.25rem;
-    }
-    .nav-btn {
-      padding: 0.65rem 1.4rem;
-      border: none; border-radius: 8px;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.82rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .nav-btn.prev {
-      background: var(--surface2); color: var(--text-dim);
-      border: 1px solid var(--border);
-    }
-    .nav-btn.prev:hover:not(:disabled) { color: var(--text); }
-    .nav-btn.next { background: var(--accent); color: #000; }
-    .nav-btn.next:hover:not(:disabled) { background: #00dfa8; transform: translateX(2px); }
-    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
-    .prog-text {
-      margin-left: auto;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.72rem; color: var(--text-dim);
-    }
-
-    @media (max-width: 720px) {
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
-      .step-list { flex-direction: row; overflow-x: auto; padding-bottom: 0.5rem; }
-      .step-item { flex-direction: column; min-width: 110px; text-align: center; align-items: center; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tawfiq Ammari | ITI 103 Coursework</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .rutgers-scarlet { background-color: #cc0033; }
+        .rutgers-text { color: #cc0033; }
+        .rutgers-border { border-color: #cc0033; }
+        html { font-size: 1.4rem; }
+        body { line-height: 1.6; }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 font-sans text-gray-900">
+    <div id="root"></div>
 
-<header>
-  <div class="hdr-label">// UML Diagrams Exercise</div>
-  <h1>Instagram <span>Admin</span> System</h1>
-  <div class="hdr-sub">Step-by-step UML construction with explanations</div>
-  <div class="hdr-pills">
-    <span class="pill active">Exercise 1: Class Diagram</span>
-    <span class="pill">Exercise 2: Use Case Diagram</span>
-    <span class="pill">Exercise 3: Sequence Diagram</span>
-  </div>
-</header>
+    <script type="text/babel">
+        function App() {
+            // Reordered array: Week 6 is now positioned as Week 2
+            // Week 5 is moved to the final position
+            const presentations = [
+                { 
+                    title: "Instagram UML Example", 
+                    week: "Weeks 5 and 6", 
+                    file: "https://tawfiqam.github.io/ITI20/instagramuml.html", 
+                    description: "Implementing the random module and conditional control flow." 
+                },
+                
+            ];
 
-<nav class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('class',0)">
-    <span class="tab-num">1</span> Class Diagram
-  </button>
-  <button class="tab-btn" onclick="switchTab('usecase',1)">
-    <span class="tab-num">2</span> Use Case Diagram
-  </button>
-  <button class="tab-btn" onclick="switchTab('sequence',2)">
-    <span class="tab-num">3</span> Sequence Diagram
-  </button>
-</nav>
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <header className="rutgers-scarlet text-white py-16 px-6 shadow-xl">
+                        <div className="max-w-5xl mx-auto">
+                            <h1 className="text-6xl font-black uppercase tracking-tighter">Tawfiq Ammari</h1>
+                            <div className="h-1 w-24 bg-white my-6"></div>
+                            <p className="text-3xl font-light opacity-90">
+                                ITI 103 — Intro to Information Technology and Informatics
+                            </p>
+                        </div>
+                    </header>
 
-<div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-label">Steps</div>
-    <div class="step-list" id="step-list"></div>
-  </aside>
-  <main class="content">
-    <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
-    <div>
-      <div class="step-badge" id="sbadge">Step 1</div>
-      <h2 class="step-title" id="stitle"></h2>
-    </div>
-    <div class="step-expl" id="sexpl"></div>
-    <div class="uml-key" id="skeys"></div>
-    <div class="diagram-card"><div id="ssvg"></div></div>
-    <div class="step-nav">
-      <button class="nav-btn prev" id="bprev" onclick="prevStep()">← Previous</button>
-      <button class="nav-btn next" id="bnext" onclick="nextStep()">Next Step →</button>
-      <span class="prog-text" id="ptext"></span>
-    </div>
-  </main>
-</div>
+                    <main className="flex-grow max-w-5xl w-full mx-auto py-16 px-6">
+                        <div className="flex items-center justify-between mb-12">
+                            <h2 className="text-4xl font-bold border-b-4 rutgers-border inline-block">Course Presentations</h2>
+                            <span className="text-gray-400 font-mono text-sm tracking-tight">tawfiqam.github.io/ITI103/</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {presentations.map((pres, index) => (
+                                <a 
+                                    key={index} 
+                                    href={pres.file} 
+                                    className="block group"
+                                >
+                                    <div className="bg-white p-8 rounded-xl shadow-md border-l-8 rutgers-border card-hover border border-gray-100 h-full flex flex-col">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className="text-xs font-black rutgers-text uppercase tracking-widest bg-red-50 px-2 py-1 rounded">
+                                                {pres.week}
+                                            </span>
+                                            <svg className="w-6 h-6 text-gray-300 group-hover:rutgers-text transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-3xl font-black mb-3 group-hover:rutgers-text transition-colors leading-tight">
+                                            {pres.title}
+                                        </h3>
+                                        <p className="text-gray-600 text-lg flex-grow">
+                                            {pres.description}
+                                        </p>
+                                        <div className="mt-6 text-sm font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-900 transition-colors">
+                                            View Presentation →
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </main>
 
-<script>
-/* ================================================================
-   COLOUR CONSTANTS (for SVG diagrams)
-   ================================================================ */
-const C = {
-  hdr:    '#1a3a5c',
-  body:   '#eef5ff',
-  border: '#2d6a9f',
-  hl:     '#fffbe6',
-  hlB:    '#e8a800',
-  assoc:  '#555',
-  inh:    '#1a3a5c',
-  ucFill: '#e8f4ff',
-  sysHdr: '#1a3a5c',
-  seqBox: '#1a3a5c',
-  ret:    '#0066cc',
-  err:    '#cc2222',
-  altFl:  '#e6f0ff',
-  altBr:  '#2d6a9f',
-  loopFl: '#fffce8',
-  loopBr: '#c8a800',
-  flagFl: '#fff0f0',
-  flagBr: '#cc4444',
-};
+                    <footer className="bg-white border-t border-gray-200 py-10 px-6 text-center text-gray-500">
+                        <div className="max-w-5xl mx-auto">
+                            <p className="font-bold">Rutgers University SC&I</p>
+                            <p className="text-sm mt-1 uppercase tracking-tighter">Information Technology and Informatics</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
 
-/* ── Helpers ── */
-function t(x, y, txt, {anchor='middle', fill='#1a2a3a', fs=11.5, fw='normal', ff='IBM Plex Mono,monospace', fi=false}={}) {
-  return `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="${ff}" font-size="${fs}" fill="${fill}" font-weight="${fw}" font-style="${fi?'italic':'normal'}">${txt}</text>`;
-}
-
-function line(x1,y1,x2,y2,stroke='#333',sw=1.5,dash='') {
-  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${sw}"${dash?' stroke-dasharray="'+dash+'"':''} />`;
-}
-
-/* ── UML Class Box ──
-   Returns { svg, h }  where h is total box height */
-function classBox(x,y,w,name,attrs,methods,hl=false) {
-  const lh=18, pad=8, nh=32;
-  const ah = attrs.length   ? pad*2 + attrs.length*lh   : 22;
-  const mh = methods.length ? pad*2 + methods.length*lh : 0;
-  const h  = nh + ah + mh;
-  const bg = hl ? C.hl  : C.body;
-  const br = hl ? C.hlB : C.border;
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg}" stroke="${br}" stroke-width="1.5" rx="2"/>`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="${nh}" fill="${C.hdr}" rx="2"/>`;
-  s += `<rect x="${x}" y="${y+nh-2}" width="${w}" height="2" fill="${C.hdr}"/>`;
-  s += t(x+w/2, y+22, name, {fill:'#fff', fs:12.5, fw:'bold'});
-  s += line(x, y+nh+ah, x+w, y+nh+ah, br, 1);
-  attrs.forEach((a,i)  => s += t(x+8, y+nh+pad+(i+1)*lh-4, a, {anchor:'start', fs:10.5}));
-  methods.forEach((m,i)=> s += t(x+8, y+nh+ah+pad+(i+1)*lh-4, m, {anchor:'start', fs:10.5}));
-  return {svg:s, h};
-}
-
-function boxH(attrs,methods) {
-  const lh=18, pad=8, nh=32;
-  const ah = attrs.length   ? pad*2 + attrs.length*lh   : 22;
-  const mh = methods.length ? pad*2 + methods.length*lh : 0;
-  return nh+ah+mh;
-}
-
-/* inheritance arrow (hollow triangle at parent end, line to child) */
-function inhArrow(fx,fy,tx,ty) {
-  const sz=11;
-  const dx=tx-fx, dy=ty-fy, len=Math.sqrt(dx*dx+dy*dy);
-  const ux=dx/len, uy=dy/len, px2=-uy, py2=ux;
-  const ex=tx-ux*sz, ey=ty-uy*sz;
-  const p1x=ex+px2*(sz/2), p1y=ey+py2*(sz/2);
-  const p2x=ex-px2*(sz/2), p2y=ey-py2*(sz/2);
-  return `${line(fx,fy,ex,ey,C.inh,1.5)}<polygon points="${tx},${ty} ${p1x},${p1y} ${p2x},${p2y}" fill="white" stroke="${C.inh}" stroke-width="1.5"/>`;
-}
-
-/* ================================================================
-   CLASS DIAGRAM BUILDER
-   ================================================================ */
-function buildClass(step) {
-  const W=720, H=640;
-
-  /* --- positions --- */
-  const PX=255,PY=35,PW=195;
-  const PA=['- name : String','- id : String'],PM=[];
-
-  const AX=215,AY=210,AW=260;
-  const AA=['- dateCreated : Date','- accountType : String'];
-  const AM=['+ viewFlaggedPosts() : List','+ generateUsageReport() : Report'];
-
-  const SUB_Y=440;
-  const SX1=10, SW1=202;
-  const SX2=237,SW2=218;
-  const SX3=480,SW3=228;
-
-  const SA1=['- userId : String','- userName : String'];
-  const SM1=['+ post() : void','+ like() : void'];
-
-  const SA2=['- creatorAccountId : String','- supportingOrgs : List'];
-  const SM2=['+ post() : void','+ like() : void','+ verifyIdentity() : void'];
-
-  const SA3=['- businessId : String','- businessDesc : String'];
-  const SM3=['+ post() : void','+ like() : void','+ validateBusiness() : void'];
-
-  const ph = boxH(PA,PM);
-  const ah = boxH(AA,AM);
-
-  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#f8faff"/>`;
-
-  // Person (always shown)
-  s += classBox(PX,PY,PW,'Person',PA,PM, step===1).svg;
-
-  if(step>=2) s += classBox(AX,AY,AW,'Account',AA,AM, step===2).svg;
-
-  if(step>=3) {
-    // association line + multiplicity
-    const lx=PX+PW/2, ly=PY+ph;
-    const rx=AX+AW/2, ry=AY;
-    s += line(lx,ly,rx,ry,C.assoc,1.5);
-    s += t(lx+13, ly+14, '1',    {fs:11, fw:'bold', anchor:'start'});
-    s += t(rx+13, ry-5,  '1..*', {fs:11, fw:'bold', anchor:'start'});
-    s += t((lx+rx)/2+18,(ly+ry)/2,'owns',{fs:10,fill:'#888',fi:true});
-  }
-
-  if(step>=4) {
-    const hlSub = step===4;
-    s += classBox(SX1,SUB_Y,SW1,'PersonalAccount', SA1, step>=5?SM1:[], hlSub).svg;
-    s += classBox(SX2,SUB_Y,SW2,'CreatorAccount',  SA2, step>=5?SM2:[], hlSub).svg;
-    s += classBox(SX3,SUB_Y,SW3,'BusinessAccount', SA3, step>=5?SM3:[], hlSub).svg;
-  }
-
-  if(step>=5) {
-    const abotX = AX+AW/2;
-    const abot  = AY+ah;
-    const mergeY= abot + (SUB_Y-abot)/2;
-
-    // horizontal merge bar
-    const c1=SX1+SW1/2, c2=SX2+SW2/2, c3=SX3+SW3/2;
-    s += line(c1,SUB_Y,c1,mergeY,C.inh,1.5);
-    s += line(c2,SUB_Y,c2,mergeY,C.inh,1.5);
-    s += line(c3,SUB_Y,c3,mergeY,C.inh,1.5);
-    s += line(c1,mergeY,c3,mergeY,C.inh,1.5);
-    s += line(abotX,mergeY,abotX,abot,C.inh,1.5);
-    // hollow triangle pointing into Account bottom
-    s += inhArrow(abotX,mergeY,abotX,abot);
-    s += t(abotX+8, mergeY-6,'«extends»',{fs:9,fill:'#777',fi:true});
-
-    // redraw subclasses on top with full methods
-    s += classBox(SX1,SUB_Y,SW1,'PersonalAccount',SA1,SM1,false).svg;
-    s += classBox(SX2,SUB_Y,SW2,'CreatorAccount', SA2,SM2,false).svg;
-    s += classBox(SX3,SUB_Y,SW3,'BusinessAccount',SA3,SM3,false).svg;
-  }
-
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
-}
-
-/* ================================================================
-   USE CASE DIAGRAM BUILDER
-   ================================================================ */
-function stickFig(cx,cy,label) {
-  const col=C.hdr;
-  return `
-    <circle cx="${cx}" cy="${cy}" r="13" fill="none" stroke="${col}" stroke-width="2"/>
-    <line x1="${cx}" y1="${cy+13}" x2="${cx}" y2="${cy+44}" stroke="${col}" stroke-width="2"/>
-    <line x1="${cx-20}" y1="${cy+24}" x2="${cx+20}" y2="${cy+24}" stroke="${col}" stroke-width="2"/>
-    <line x1="${cx}" y1="${cy+44}" x2="${cx-16}" y2="${cy+66}" stroke="${col}" stroke-width="2"/>
-    <line x1="${cx}" y1="${cy+44}" x2="${cx+16}" y2="${cy+66}" stroke="${col}" stroke-width="2"/>
-    ${t(cx, cy+82, label, {fill:col, fs:11.5, fw:'bold'})}`;
-}
-
-function ucEllipse(cx,cy,rx,ry,lines,hl=false) {
-  const bg=hl?C.hl:C.ucFill, br=hl?C.hlB:C.border;
-  let s=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${bg}" stroke="${br}" stroke-width="1.5"/>`;
-  const dy=(lines.length-1)*7;
-  lines.forEach((l,i)=>{ s+=t(cx, cy-(dy/2)+(i*14)+4, l, {fs:10, fw:'bold', fill:'#1a2a3a'}); });
-  return s;
-}
-
-function buildUseCase(step) {
-  const W=720, H=490;
-  const SX=130,SY=30,SW=465,SH=425;
-
-  const ACs = [
-    {cx:295,cy:95,  lines:['View User','Accounts']},
-    {cx:450,cy:95,  lines:['View Account','Details']},
-    {cx:295,cy:195, lines:['View Flagged','Posts']},
-    {cx:450,cy:195, lines:['Generate Usage','Report']},
-    {cx:295,cy:305, lines:['Verify Creator','Identity']},
-    {cx:450,cy:305, lines:['Validate Business','Account']},
-  ];
-  const UCs = [
-    {cx:330,cy:400, lines:['Post Content']},
-    {cx:490,cy:400, lines:['Like Content']},
-  ];
-
-  const admX=55, admY=110;
-  const usrX=665,usrY=220;
-
-  let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#f8faff"/>`;
-
-  // System boundary
-  s += `<rect x="${SX}" y="${SY}" width="${SW}" height="${SH}" fill="${step===1?'#fffce8':'#f0f7ff'}" stroke="${step===1?C.hlB:C.border}" stroke-width="2" rx="4"/>`;
-  s += t(SX+SW/2, SY+22,'Instagram Admin System',{fs:13,fw:'bold',fill:C.sysHdr});
-
-  if(step>=2) {
-    s += stickFig(admX,admY,'Administrator');
-    s += stickFig(usrX,usrY,'User');
-  }
-
-  if(step>=3) {
-    ACs.forEach(uc => s+=ucEllipse(uc.cx,uc.cy,75,30,uc.lines,step===3));
-    UCs.forEach(uc => s+=ucEllipse(uc.cx,uc.cy,68,28,uc.lines,step===3));
-  }
-
-  if(step>=4) {
-    const admBx=admX, admBy=admY+44;
-    ACs.forEach(uc => s+=line(admBx,admBy,uc.cx-75,uc.cy,C.border,1.3));
-    const usrBx=usrX, usrBy=usrY+44;
-    UCs.forEach(uc => s+=line(usrBx,usrBy,uc.cx+68,uc.cy,C.border,1.3));
-  }
-
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
-}
-
-/* ================================================================
-   SEQUENCE DIAGRAM BUILDER
-   ================================================================ */
-function buildSeq(step) {
-  const W=720, H=590;
-  const admX=130, sysX=565;
-  const bw=155, bh=36, sy=18;
-  const llEnd=575;
-
-  let s=`<rect x="0" y="0" width="${W}" height="${H}" fill="#f8faff"/>`;
-
-  // lifelines
-  function lifeline(cx,label) {
-    const lx=cx-bw/2;
-    return `<rect x="${lx}" y="${sy}" width="${bw}" height="${bh}" fill="${C.seqBox}" rx="3" stroke="${C.border}" stroke-width="1.5"/>
-    ${t(cx,sy+23,label,{fill:'#fff',fs:12,fw:'bold'})}
-    ${line(cx,sy+bh,cx,llEnd,C.border,1.5,'6,4')}`;
-  }
-  s+=lifeline(admX,':Administrator');
-  s+=lifeline(sysX,':System');
-
-  /* message arrow helper */
-  function msg(x1,y1,x2,y2,label,isDash=false,col='#222') {
-    const a=Math.atan2(y2-y1,x2-x1), al=10, aa=Math.PI/6;
-    const p1x=x2-al*Math.cos(a-aa), p1y=y2-al*Math.sin(a-aa);
-    const p2x=x2-al*Math.cos(a+aa), p2y=y2-al*Math.sin(a+aa);
-    const lbl=t((x1+x2)/2, y1-5, label, {fs:10,fw:'bold',fill:col});
-    const dash=isDash?'stroke-dasharray="5,3"':'';
-    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="1.5" ${dash}/>
-    <line x1="${x2}" y1="${y2}" x2="${p1x}" y2="${p1y}" stroke="${col}" stroke-width="1.5"/>
-    <line x1="${x2}" y1="${y2}" x2="${p2x}" y2="${p2y}" stroke="${col}" stroke-width="1.5"/>
-    ${lbl}`;
-  }
-
-  /* combined fragment box */
-  function fragment(x,y,w,h,kw,guard,bg2,br2) {
-    const kl=kw.length*7+12;
-    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg2}" stroke="${br2}" stroke-width="1.5" rx="2" opacity="0.9"/>
-    <rect x="${x}" y="${y}" width="${kl}" height="17" fill="${br2}" rx="2"/>
-    ${t(x+kl/2, y+12, kw, {fill:'#fff',fs:10,fw:'bold'})}
-    ${guard?t(x+kl+6, y+12, '['+guard+']', {anchor:'start',fs:9.5,fill:'#555'}):''}`;
-  }
-
-  if(step===1) return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
-
-  if(step===2) {
-    s+=msg(admX,115,sysX,115,'enterCredentials(username, password)');
-    s+=msg(sysX,158,admX,158,'loginResult',true,C.ret);
-  }
-
-  if(step===3) {
-    s+=fragment(70,88,580,240,'loop','until login successful',C.loopFl,C.loopBr);
-    s+=fragment(84,112,552,110,'alt','login success',C.altFl,C.altBr);
-    s+=line(84,222,636,222,C.altBr,1,'5,4');
-    s+=t(94,237,'[login failed]',{anchor:'start',fs:9.5,fill:'#555'});
-    s+=msg(admX,148,sysX,148,'enterCredentials(username, password)');
-    s+=msg(sysX,186,admX,186,'«return» Login Successful',true,C.ret);
-    s+=msg(sysX,260,admX,260,'«return» Login Failed',true,C.err);
-  }
-
-  if(step===4) {
-    // login section
-    s+=fragment(70,88,580,240,'loop','until login successful',C.loopFl,C.loopBr);
-    s+=fragment(84,112,552,110,'alt','login success',C.altFl,C.altBr);
-    s+=line(84,222,636,222,C.altBr,1,'5,4');
-    s+=t(94,237,'[login failed]',{anchor:'start',fs:9.5,fill:'#555'});
-    s+=msg(admX,148,sysX,148,'enterCredentials(username, password)');
-    s+=msg(sysX,186,admX,186,'«return» Login Successful',true,C.ret);
-    s+=msg(sysX,260,admX,260,'«return» Login Failed',true,C.err);
-    // search section
-    s+=msg(admX,365,sysX,365,'searchUser(userId)');
-    s+=msg(sysX,400,admX,400,'«return» userInfo',true,'#333');
-    // flagged posts alt
-    s+=fragment(70,420,580,150,'alt','has flagged posts',C.flagFl,C.flagBr);
-    s+=line(70,480,650,480,C.flagBr,1,'5,4');
-    s+=t(82,495,'[no flagged posts]',{anchor:'start',fs:9.5,fill:'#555'});
-    s+=msg(sysX,453,admX,453,'«return» flaggedPostDetails',true,C.flagBr);
-    s+=msg(sysX,510,admX,510,'«return» No flagged posts found',true,'#888');
-  }
-
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
-}
-
-/* ================================================================
-   DIAGRAM DATA
-   ================================================================ */
-const DIAGRAMS = {
-  class: {
-    tabIdx: 0,
-    steps: [
-      {
-        title: 'Identify the Person Class',
-        expl: `<strong>Start by defining the central entity: Person.</strong><br><br>
-In UML, a class is represented as a <strong>rectangle divided into three sections</strong>:<br>
-• <strong>Top</strong>: Class name (bold, centred)<br>
-• <strong>Middle</strong>: Attributes — data the class holds<br>
-• <strong>Bottom</strong>: Methods — operations the class can perform<br><br>
-The <code>Person</code> class captures who owns Instagram accounts:<br>
-• <code>- name : String</code> — the minus sign (<code>-</code>) means <em>private</em><br>
-• <code>- id : String</code> — a unique identifier per person<br><br>
-No methods are needed here; Person's only role is to <em>own</em> accounts.`,
-        keys: [{i:'▭',l:'class = rectangle'},{i:'-',l:'private (attribute)'},{i:'+',l:'public (method)'}],
-        svg: buildClass(1)
-      },
-      {
-        title: 'Add the Account Class',
-        expl: `<strong>Introduce the Account class below Person.</strong><br><br>
-An Account holds all information about a single Instagram account:<br>
-• <code>- dateCreated : Date</code> — when the account was registered<br>
-• <code>- accountType : String</code> — Personal, Creator, or Business<br><br>
-Two <strong>public methods</strong> (prefix <code>+</code>) expose administrator operations:<br>
-• <code>+ viewFlaggedPosts() : List</code> — returns any flagged posts<br>
-• <code>+ generateUsageReport() : Report</code> — 3-month activity report<br><br>
-Placing Account below Person visually sets up the association line we'll add next.`,
-        keys: [{i:'+',l:'public method'},{i:'()',l:'method notation'},{i:':',l:'return type'}],
-        svg: buildClass(2)
-      },
-      {
-        title: 'Draw the Association: Person → Account',
-        expl: `<strong>Connect Person and Account with a solid association line.</strong><br><br>
-A <strong>solid line</strong> between two classes shows they are structurally related at runtime — one holds a reference to the other.<br><br>
-<strong>Multiplicity labels</strong> at each end quantify the relationship:<br>
-• <code>1</code> near Person — exactly one person is the owner<br>
-• <code>1..*</code> near Account — that person owns one-or-more accounts<br><br>
-Read it aloud: <em>"One Person owns one or more Accounts."</em><br><br>
-The label <em>owns</em> (in italics) clarifies the nature of the relationship.`,
-        keys: [{i:'——',l:'association'},{i:'1',l:'exactly one'},{i:'1..*',l:'one or more'},{i:'0..*',l:'zero or more'}],
-        svg: buildClass(3)
-      },
-      {
-        title: 'Add the Three Account Subclasses',
-        expl: `<strong>Instagram supports three account types — model them as subclasses.</strong><br><br>
-A subclass <em>inherits</em> all attributes and methods of its parent, then adds its own specialised members.<br><br>
-• <strong>PersonalAccount</strong> — basic user; has <code>userId</code> and <code>userName</code><br>
-• <strong>CreatorAccount</strong> — content creator; has <code>creatorAccountId</code> and <code>supportingOrgs</code><br>
-• <strong>BusinessAccount</strong> — commercial entity; has <code>businessId</code> and <code>businessDesc</code><br><br>
-Subclasses are drawn <em>below</em> the parent class in UML. Inheritance arrows will be added in the final step.`,
-        keys: [{i:'△',l:'inheritance (next step)'},{i:'↓',l:'subclass below parent'}],
-        svg: buildClass(4)
-      },
-      {
-        title: 'Complete: Add Inheritance Arrows & Methods',
-        expl: `<strong>Connect subclasses to Account with UML inheritance arrows.</strong><br><br>
-The <strong>hollow triangle arrowhead</strong> (△) points toward the <em>parent</em> class. Multiple children share a single merge point before the arrow to keep the diagram clean.<br><br>
-Each subclass also defines its own operations:<br>
-• <code>PersonalAccount</code>: <code>post()</code>, <code>like()</code><br>
-• <code>CreatorAccount</code>: <code>post()</code>, <code>like()</code>, <code>verifyIdentity()</code><br>
-• <code>BusinessAccount</code>: <code>post()</code>, <code>like()</code>, <code>validateBusiness()</code><br><br>
-<strong>Inherited methods</strong> (<code>viewFlaggedPosts()</code>, <code>generateUsageReport()</code>) do <em>not</em> need to be repeated — every subclass automatically has them.`,
-        keys: [{i:'△',l:'hollow triangle = inheritance'},{i:'↑',l:'points to parent'},{i:'✓',l:'inherited methods omitted'}],
-        svg: buildClass(5)
-      }
-    ]
-  },
-
-  usecase: {
-    tabIdx: 1,
-    steps: [
-      {
-        title: 'Draw the System Boundary',
-        expl: `<strong>The system boundary is the first element in a Use Case Diagram.</strong><br><br>
-It is drawn as a <strong>large rectangle</strong> labelled with the system name at the top. Everything <em>inside</em> the box belongs to the system; actors (people or external systems that interact with it) are placed <em>outside</em>.<br><br>
-The boundary helps answer: <em>"What is in scope?"</em><br><br>
-Our system is the <strong>Instagram Admin System</strong> — the admin back-end that manages accounts and reviews content.`,
-        keys: [{i:'▭',l:'system boundary'},{i:'inner ◯',l:'use cases (next)'},{i:'outer ♟',l:'actors (next)'}],
-        svg: buildUseCase(1)
-      },
-      {
-        title: 'Place the Actors',
-        expl: `<strong>Actors represent roles that interact with the system.</strong><br><br>
-In UML, actors are drawn as <strong>stick figures</strong> placed <em>outside</em> the system boundary. The actor's name is written below the figure.<br><br>
-• <strong>Administrator</strong> (left) — the primary actor who manages accounts<br>
-• <strong>User</strong> (right) — a secondary actor representing Instagram account holders<br><br>
-Convention: the primary actor (who initiates most interactions) goes on the left; secondary actors on the right.`,
-        keys: [{i:'♟',l:'actor (outside boundary)'},{i:'left',l:'primary actor'},{i:'right',l:'secondary actor'}],
-        svg: buildUseCase(2)
-      },
-      {
-        title: 'Add the Use Cases',
-        expl: `<strong>Use cases describe what the system does for its actors.</strong><br><br>
-Each use case is drawn as an <strong>ellipse (oval)</strong> inside the system boundary, labelled with a short, action-oriented phrase.<br><br>
-<strong>Administrator use cases:</strong><br>
-View User Accounts · View Account Details · View Flagged Posts · Generate Usage Report · Verify Creator Identity · Validate Business Account<br><br>
-<strong>User use cases:</strong><br>
-Post Content · Like Content<br><br>
-Use cases focus on <em>what</em> the system does, not <em>how</em> — implementation details live in other diagrams.`,
-        keys: [{i:'◯',l:'use case = ellipse'},{i:'inside',l:'must be in boundary'},{i:'verb',l:'label = action phrase'}],
-        svg: buildUseCase(3)
-      },
-      {
-        title: 'Complete: Connect Actors to Use Cases',
-        expl: `<strong>Association lines link actors to the use cases they initiate.</strong><br><br>
-A plain solid line (no arrowhead) between an actor and a use case means that actor <em>participates</em> in that interaction.<br><br>
-• The <strong>Administrator</strong> participates in all six management use cases on the left side of the system<br>
-• The <strong>User</strong> participates in Post Content and Like Content<br><br>
-This complete Use Case Diagram gives a concise, technology-agnostic overview of system behaviour — a communication tool understandable by both developers and non-technical stakeholders.`,
-        keys: [{i:'——',l:'association line'},{i:'◯',l:'use case'},{i:'♟',l:'actor'}],
-        svg: buildUseCase(4)
-      }
-    ]
-  },
-
-  sequence: {
-    tabIdx: 2,
-    steps: [
-      {
-        title: 'Establish the Lifelines',
-        expl: `<strong>Every Sequence Diagram begins with lifelines for each participant.</strong><br><br>
-A <strong>lifeline</strong> is made up of:<br>
-• A labelled <strong>box</strong> at the top (the participant's name, prefixed with a colon by convention)<br>
-• A <strong>dashed vertical line</strong> extending downward — representing the participant's existence over the course of the interaction<br><br>
-This diagram involves two participants:<br>
-• <code>:Administrator</code> — the human actor who initiates all actions<br>
-• <code>:System</code> — the Instagram Admin System backend<br><br>
-<strong>Time flows downward</strong>. Events higher on the diagram happen earlier.`,
-        keys: [{i:'▭',l:'participant box'},{i:'┆',l:'lifeline (dashed)'},{i:'↓',l:'time flows down'}],
-        svg: buildSeq(1)
-      },
-      {
-        title: 'Add the Login Messages',
-        expl: `<strong>Messages between participants are drawn as horizontal arrows.</strong><br><br>
-Two types of arrow are used:<br>
-• <strong>Solid arrow →</strong> : a <em>synchronous call</em> or message being sent<br>
-• <strong>Dashed arrow ⇢</strong> : a <em>return value</em> or response<br><br>
-The first exchange models the login attempt:<br>
-1. <code>Administrator → System</code>: <strong>enterCredentials(username, password)</strong><br>
-2. <code>System → Administrator</code>: <strong>loginResult</strong> (the outcome)<br><br>
-Labels on arrows describe the message name or the data being passed. In the next step we'll wrap these in a fragment to handle repeated attempts and branching outcomes.`,
-        keys: [{i:'→',l:'solid = request/call'},{i:'⇢',l:'dashed = return/response'},{i:'label',l:'message name or data'}],
-        svg: buildSeq(2)
-      },
-      {
-        title: 'Add Loop & Alt Combined Fragments',
-        expl: `<strong>Combined fragments add control-flow logic to a sequence diagram.</strong><br><br>
-A <strong>fragment</strong> is a labelled rectangle drawn around a set of messages. The keyword in the top-left corner defines its type:<br><br>
-• <code>loop</code> — the enclosed messages <em>repeat</em> until the guard condition is satisfied. Here: <em>until login successful</em>.<br>
-• <code>alt</code> — <em>alternative</em> flows, like an if/else. Each partition is separated by a dashed line.<br>
-   - <code>[login success]</code> partition → system responds with "Login Successful"<br>
-   - <code>[login failed]</code> partition → system responds with "Login Failed"<br><br>
-Guard conditions appear in square brackets: <code>[condition]</code>.`,
-        keys: [{i:'▭',l:'combined fragment'},{i:'loop',l:'repeat until condition'},{i:'alt',l:'alternative branches'},{i:'[ ]',l:'guard condition'}],
-        svg: buildSeq(3)
-      },
-      {
-        title: 'Complete: Search User & Flagged Posts Result',
-        expl: `<strong>After a successful login, the administrator searches for a user.</strong><br><br>
-The remaining interaction sequence:<br>
-1. <code>Administrator → System</code>: <strong>searchUser(userId)</strong><br>
-2. <code>System → Administrator</code>: <strong>userInfo</strong> returned<br>
-3. Another <code>alt</code> fragment shows two possible outcomes:<br>
-   • <code>[has flagged posts]</code> → System returns <em>flaggedPostDetails</em><br>
-   • <code>[no flagged posts]</code> → System returns <em>"No flagged posts found"</em><br><br>
-This is the <strong>complete Sequence Diagram</strong>. It precisely captures the order of every message, the branching outcomes of login, and the two possible results of a flagged-posts query.`,
-        keys: [{i:'→',l:'request message'},{i:'⇢',l:'return message'},{i:'alt',l:'conditional result'}],
-        svg: buildSeq(4)
-      }
-    ]
-  }
-};
-
-/* ================================================================
-   STATE & UI
-   ================================================================ */
-let CUR_TAB  = 'class';
-let CUR_STEP = 0;
-
-function switchTab(tab, tabIdx) {
-  CUR_TAB  = tab;
-  CUR_STEP = 0;
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===tabIdx));
-  // update pills
-  document.querySelectorAll('.pill').forEach((p,i) => p.classList.toggle('active', i===tabIdx));
-  render();
-}
-
-function nextStep() {
-  const steps = DIAGRAMS[CUR_TAB].steps;
-  if(CUR_STEP < steps.length-1) { CUR_STEP++; render(); }
-}
-function prevStep() {
-  if(CUR_STEP > 0) { CUR_STEP--; render(); }
-}
-function goStep(i) { CUR_STEP=i; render(); }
-
-function render() {
-  const steps = DIAGRAMS[CUR_TAB].steps;
-  const step  = steps[CUR_STEP];
-  const total = steps.length;
-
-  document.getElementById('sbadge').textContent = `Step ${CUR_STEP+1} of ${total}`;
-  document.getElementById('stitle').innerHTML   = step.title;
-  document.getElementById('sexpl').innerHTML    = step.expl;
-  document.getElementById('ssvg').innerHTML     = step.svg;
-  document.getElementById('pfill').style.width  = `${((CUR_STEP+1)/total)*100}%`;
-  document.getElementById('ptext').textContent  = `${CUR_STEP+1} / ${total} steps`;
-
-  // keys
-  const kEl = document.getElementById('skeys');
-  kEl.innerHTML = (step.keys||[]).map(k=>`<div class="key-item"><span>${k.i}</span>${k.l}</div>`).join('');
-
-  // sidebar
-  document.getElementById('step-list').innerHTML = steps.map((s,i)=>`
-    <div class="step-item ${i===CUR_STEP?'active':i<CUR_STEP?'done':''}" onclick="goStep(${i})">
-      <div class="step-dot">${i<CUR_STEP?'✓':i+1}</div>
-      <div><div class="step-name">${s.title}</div></div>
-    </div>`).join('');
-
-  document.getElementById('bprev').disabled = CUR_STEP===0;
-  document.getElementById('bnext').disabled = CUR_STEP===total-1;
-  document.getElementById('bnext').textContent = CUR_STEP===total-1 ? '✓ Complete' : 'Next Step →';
-}
-
-render();
-</script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
+
+
+
+
