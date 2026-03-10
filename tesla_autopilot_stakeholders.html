@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tesla Autopilot — Stakeholder Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red:    #CC0000;
+    --red-lt: #FF2222;
+    --ink:    #111118;
+    --charcoal: #2a2a35;
+    --mid:    #6b6b80;
+    --rule:   #dddde8;
+    --cream:  #fafaf7;
+    --white:  #ffffff;
+    --yellow: #f5c518;
+    --blue:   #1a56db;
+    --green:  #0d7a45;
+    --orange: #c45c00;
+    --purple: #6c22aa;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Epilogue', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--ink);
+    display: flex; align-items: center;
+    padding: 0 2.5rem;
+    height: 50px;
+    gap: 0;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: .04em;
+    margin-right: 2.5rem;
+    white-space: nowrap;
+  }
+  .nav-logo span { color: var(--red); }
+  nav a {
+    color: rgba(255,255,255,.45);
+    text-decoration: none;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 0 1rem;
+    height: 50px;
+    display: flex; align-items: center;
+    border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  nav a:hover { color: var(--white); }
+  nav a.active { color: var(--white); border-color: var(--red); }
+
+  /* ── LAYOUT ── */
+  section { padding: 90px 0 70px; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+
+  /* ── HERO ── */
+  #hero {
+    background: var(--ink);
+    color: var(--white);
+    position: relative; overflow: hidden;
+    padding: 0;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .hero-bg-text {
+    position: absolute;
+    top: 50%; left: -1rem;
+    transform: translateY(-55%);
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(8rem, 22vw, 22rem);
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255,255,255,.035);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .hero-stripe {
+    position: absolute; top: 0; right: 0;
+    width: 38%; height: 100%;
+    background: var(--red);
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+    opacity: .9;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 2.5rem 5rem;
+    max-width: 680px;
+  }
+  .hero-eyebrow {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1.2rem;
+  }
+  #hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+  #hero p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,.65);
+    max-width: 520px;
+  }
+  .hero-stat-row {
+    display: flex; gap: 2.5rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+  }
+  .hero-stat .lbl {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
+    margin-top: .2rem;
+  }
+
+  /* ── SECTION TITLES ── */
+  .sec-label {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: .8rem;
+  }
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: .8rem;
+  }
+  .sec-body {
+    font-size: .95rem;
+    line-height: 1.8;
+    color: var(--mid);
+    max-width: 680px;
+    margin-bottom: 2.5rem;
+  }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 2.5rem; }
+
+  /* ── PROBLEM CARDS ── */
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  @media(max-width:680px) { .problem-grid { grid-template-columns: 1fr; } }
+  .problem-card {
+    background: var(--white);
+    padding: 1.8rem 1.5rem;
+    transition: background .2s;
+  }
+  .problem-card:hover { background: #f5f5fb; }
+  .problem-card .icon { font-size: 1.8rem; margin-bottom: .8rem; }
+  .problem-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+  .problem-card p { font-size: .85rem; color: var(--mid); line-height: 1.65; }
+
+  /* ── AUTONOMY LEVELS ── */
+  .levels-row {
+    display: flex; gap: 0;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--rule);
+    margin-bottom: 2.5rem;
+  }
+  @media(max-width:720px) { .levels-row { flex-direction: column; } }
+  .level-col {
+    flex: 1;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    background: var(--white);
+  }
+  .level-col:last-child { border-right: none; }
+  .level-col:hover { background: var(--cream); }
+  .level-col.selected {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .level-col.tesla-level { background: rgba(204,0,0,.08); border-color: rgba(204,0,0,.2); }
+  .level-col.tesla-level.selected { background: var(--red); }
+  .level-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: .3rem;
+  }
+  .level-name {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .6;
+  }
+  .level-detail {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.5rem 1.8rem;
+    font-size: .9rem;
+    line-height: 1.75;
+    color: var(--mid);
+    margin-bottom: 2.5rem;
+  }
+  .level-detail strong { color: var(--ink); }
+  .level-badge {
+    display: inline-block;
+    background: var(--red);
+    color: var(--white);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .2rem .7rem;
+    border-radius: 3px;
+    margin-left: .5rem;
+    vertical-align: middle;
+  }
+
+  /* ── STAKEHOLDER CARDS ── */
+  .stakeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .s-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    background: var(--white);
+  }
+  .s-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+  .s-card-header {
+    padding: 1.3rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .s-card-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .s-card-type {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: .2rem;
+  }
+  .s-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .s-card-body {
+    padding: 0 1.5rem 1.4rem;
+    font-size: .85rem;
+    line-height: 1.7;
+    color: var(--mid);
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-top: 0;
+  }
+  .s-card-body ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+  .s-card-body li { display: flex; gap: .5rem; align-items: flex-start; }
+  .s-card-body li::before {
+    content: '→';
+    color: var(--rule);
+    flex-shrink: 0;
+    margin-top: .05em;
+  }
+
+  /* ── INFLUENCE TABLE ── */
+  .inf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+    margin-bottom: 2.5rem;
+  }
+  .inf-table th {
+    background: var(--ink);
+    color: var(--white);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .9rem 1.2rem;
+    text-align: left;
+  }
+  .inf-table td {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--white);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .inf-table tr:hover td { background: #f5f5fb; }
+  .inf-table .sh-name {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .type-pill {
+    display: inline-block;
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .2rem .6rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ── REFLECT BOX ── */
+  .reflect-box {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 12px;
+    padding: 2.2rem 2.5rem;
+    margin-top: 1rem;
+  }
+  .reflect-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--white);
+    margin-bottom: 1.2rem;
+  }
+  .reflect-box ol {
+    counter-reset: q;
+    list-style: none;
+    display: flex; flex-direction: column; gap: 1.1rem;
+  }
+  .reflect-box li {
+    counter-increment: q;
+    display: flex; gap: 1rem; align-items: flex-start;
+    font-size: .9rem; line-height: 1.75; color: rgba(255,255,255,.7);
+  }
+  .reflect-box li::before {
+    content: counter(q);
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--red);
+    color: var(--white);
+    font-size: .7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: .1em;
+  }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: .45rem 1.1rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all .18s;
+    font-family: 'Epilogue', sans-serif;
+  }
+  .tab:hover { border-color: var(--ink); color: var(--ink); }
+  .tab.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+  /* ── TESLA FEATURES ── */
+  .feature-tier {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: var(--white);
+  }
+  .tier-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: background .18s;
+  }
+  .tier-header:hover { background: var(--cream); }
+  .tier-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .tier-price {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--mid);
+    letter-spacing: .04em;
+  }
+  .tier-body {
+    border-top: 1px solid var(--rule);
+    padding: 1rem 1.5rem;
+    font-size: .85rem;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+  .tier-body ul { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+  .tier-body li::before { content: '• '; color: var(--red); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp .4s ease both; }
+</style>
+</head>
+<body>
+
+<nav id="main-nav">
+  <span class="nav-logo"><span>Tesla</span> Autopilot</span>
+  <a href="#hero">Overview</a>
+  <a href="#problem">The Problem</a>
+  <a href="#technology">Technology</a>
+  <a href="#stakeholders">Stakeholders</a>
+  <a href="#reflect">Reflect</a>
+</nav>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+/* ── DATA ── */
+const levels = [
+  { num: 0, name: 'No Automation', driver: 'Full control', vehicle: 'Responds to driver only', color: '#6b6b80' },
+  { num: 1, name: 'Driver Assist', driver: 'Does all driving, basic help', vehicle: 'Basic aid (auto-braking, lane keep)', color: '#1a56db' },
+  { num: 2, name: 'Partial Auto', driver: 'Must stay fully alert', vehicle: 'Can steer, accelerate & brake in limited situations', color: '#0d7a45', isTesla: true },
+  { num: 3, name: 'Conditional', driver: 'Ready to take over', vehicle: 'Full control under certain conditions', color: '#c45c00' },
+  { num: 4, name: 'High Auto', driver: 'Passenger (with notice)', vehicle: 'Handles nearly all conditions', color: '#6c22aa' },
+  { num: 5, name: 'Full Auto', driver: 'No human needed', vehicle: 'In charge of all driving, all environments', color: '#CC0000' },
+];
+
+const levelDetail = [
+  null,
+  "Level 1 systems offer targeted assistance such as adaptive cruise control or automatic emergency braking — but the driver must remain in complete control at all times.",
+  "Tesla's current Autopilot is classified as Level 2: the vehicle can simultaneously control steering and speed, but the driver must remain fully alert and ready to intervene at any moment. Despite marketing language like 'Full Self-Driving,' Tesla confirmed Level 2 status to regulators.",
+  "Level 3 systems can handle driving under specific conditions without driver monitoring, but the driver must be available to take over when requested.",
+  "Level 4 systems can operate entirely without a driver in defined environments — such as geo-fenced urban areas. No Level 4 vehicles are widely commercially available yet.",
+  "Level 5 represents complete autonomy in all conditions with no human driver required. No commercially available Level 5 vehicle exists as of this writing.",
+];
+
+const tiers = [
+  {
+    name: 'Autopilot', price: 'Standard — included free',
+    color: '#1a56db',
+    features: ['Traffic-Aware Cruise Control — matches speed to surrounding traffic', 'Autosteer — assists steering within clearly marked lanes']
+  },
+  {
+    name: 'Enhanced Autopilot', price: '+$6,000 upgrade',
+    color: '#0d7a45',
+    features: ['Navigate on Autopilot — highway on-ramp to off-ramp guidance', 'Auto Lane Change — moves between adjacent highway lanes', 'Autopark — parallel and perpendicular parking', 'Summon — moves car in/out of tight spaces via app', 'Smart Summon — navigates complex parking lots to find you']
+  },
+  {
+    name: 'Full Self-Driving Mode (FSD)', price: '+$15,000 + $199/mo subscription',
+    color: '#CC0000',
+    features: ['Traffic & Stop Sign Control (Beta) — slows for signals with active supervision', 'Autosteer on City Streets (Beta) — navigates urban environments with active supervision']
+  },
+];
+
+const stakeholders = [
+  {
+    type: 'Problem Solver',
+    name: "Tesla Engineers & Executives",
+    emoji: '⚙️',
+    color: '#CC0000',
+    bg: 'rgba(204,0,0,.08)',
+    influences: [
+      'Define what "safe enough" means in product design and testing criteria',
+      'Choose hardware approach — e.g., Tesla Vision (cameras only) vs. LIDAR',
+      'Decide which features to market and how to name them (e.g., "Full Self-Driving")',
+      'Set the safety screening criteria for beta testers',
+    ],
+    influenced: [
+      'Under pressure from regulators and the public after crashes',
+      'Constrained by investor expectations for profitability and rapid deployment',
+    ]
+  },
+  {
+    type: 'Enabler',
+    name: "Investors & Shareholders",
+    emoji: '💼',
+    color: '#1a56db',
+    bg: 'rgba(26,86,219,.08)',
+    influences: [
+      'Fund R&D and fleet expansion through capital',
+      'Incentivise rapid feature releases to stay ahead of competitors',
+      'Can pressure leadership through shareholder votes and public pressure',
+    ],
+    influenced: [
+      'Returns depend on Tesla maintaining its autonomous technology lead',
+      'Exposed to liability risk if technology causes harm',
+    ]
+  },
+  {
+    type: 'Enabler',
+    name: "Beta Tester Owners (~12,000)",
+    emoji: '🧪',
+    color: '#0d7a45',
+    bg: 'rgba(13,122,69,.08)',
+    influences: [
+      'Provide real-world FSD training data before wide release',
+      'Screened for safe driving history (no speeding, hard braking)',
+      'Effectively serve as unpaid test drivers — unlike competitors who hire safety drivers',
+    ],
+    influenced: [
+      'Accept personal safety risk by testing pre-release software on public roads',
+      'Gain early access to features; self-select as technology enthusiasts',
+    ]
+  },
+  {
+    type: 'Opponent / Regulator',
+    name: "NHTSA & Regulators",
+    emoji: '⚖️',
+    color: '#c45c00',
+    bg: 'rgba(196,92,0,.08)',
+    influences: [
+      'Investigate crashes involving Tesla Autopilot',
+      'Can mandate recalls, design changes, or safety feature requirements',
+      'California regulators alleged "Full Self-Driving" label is fraudulent',
+    ],
+    influenced: [
+      'Limited by jurisdiction gaps — regulations haven\'t kept pace with AV technology',
+      'Influenced by industry lobbying and public opinion on innovation',
+    ]
+  },
+  {
+    type: 'Potential User',
+    name: "Tesla Owners & Drivers",
+    emoji: '🚗',
+    color: '#6c22aa',
+    bg: 'rgba(108,34,170,.08)',
+    influences: [
+      'Purchase decisions signal market demand for autonomous features',
+      'Cabin camera data feeds into model training and safety monitoring',
+      'Can file complaints, legal suits, or share experiences publicly',
+    ],
+    influenced: [
+      'May over-trust the system due to aspirational marketing language',
+      'Bear personal responsibility to remain attentive even when Autopilot is engaged',
+      'Pay premium prices for features that remain in beta',
+    ]
+  },
+  {
+    type: 'Bystander',
+    name: "Other Road Users & the Public",
+    emoji: '🚶',
+    color: '#555570',
+    bg: 'rgba(85,85,112,.08)',
+    influences: [
+      'Public perception can sway regulatory and political will to act',
+      'Accident victims or families can bring high-profile legal cases',
+      'Media coverage of crashes shapes narrative around AV safety',
+    ],
+    influenced: [
+      'Share roads with beta-test vehicles without consenting to the risk',
+      'Pedestrians, cyclists, and other drivers affected by AV decisions they can\'t control',
+      'Disparate impact — lower-income communities may gain road safety benefits last',
+    ]
+  },
+];
+
+const typeColors = {
+  'Problem Solver': { bg: 'rgba(204,0,0,.1)', text: '#CC0000' },
+  'Enabler':        { bg: 'rgba(13,122,69,.1)', text: '#0d7a45' },
+  'Opponent / Regulator': { bg: 'rgba(196,92,0,.1)', text: '#c45c00' },
+  'Potential User': { bg: 'rgba(108,34,170,.1)', text: '#6c22aa' },
+  'Bystander':      { bg: 'rgba(85,85,112,.1)', text: '#555570' },
+};
+
+const influenceRows = [
+  { name: 'Tesla Engineers', type: 'Problem Solver', over: 'Set safety standards, choose sensors, control marketing language', from: 'Regulatory investigations, public crashes, investor timelines' },
+  { name: 'Investors', type: 'Enabler', over: 'Fund development; pressure speed-to-market', from: 'Liability exposure from crashes; reputational risk' },
+  { name: 'Beta Testers', type: 'Enabler', over: 'Generate real-world training data for AI', from: 'Accepting personal safety risk on public roads' },
+  { name: 'NHTSA / Regulators', type: 'Opponent / Regulator', over: 'Mandate recalls, investigate crashes, challenge marketing', from: 'Industry lobbying; outdated regulatory frameworks' },
+  { name: 'Tesla Owners', type: 'Potential User', over: 'Market demand signals; complaint & legal channels', from: 'Over-trust from aspirational branding; premium prices' },
+  { name: 'Other Road Users', type: 'Bystander', over: 'Public pressure; media; legal action after incidents', from: 'Share roads with beta vehicles; no choice in the matter' },
+];
+
+/* ── COMPONENTS ── */
+function FeatureTier({ tier }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="feature-tier">
+      <div className="tier-header" onClick={() => setOpen(o => !o)}>
+        <span className="tier-title" style={{ color: tier.color }}>{tier.name}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span className="tier-price">{tier.price}</span>
+          <span style={{ color: 'var(--mid)', fontSize: '1.1rem' }}>{open ? '▲' : '▼'}</span>
+        </div>
+      </div>
+      {open && (
+        <div className="tier-body fade-up">
+          <ul>{tier.features.map((f,i) => <li key={i}>{f}</li>)}</ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StakeholderCard({ s }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="s-card" onClick={() => setOpen(o => !o)}>
+      <div className="s-card-header">
+        <div className="s-card-icon" style={{ background: s.bg, color: s.color }}>
+          <span>{s.emoji}</span>
+        </div>
+        <div>
+          <div className="s-card-type" style={{ color: s.color }}>{s.type}</div>
+          <div className="s-card-name">{s.name}</div>
+        </div>
+        <span style={{ marginLeft: 'auto', color: 'var(--mid)', fontSize: '.9rem' }}>{open ? '▲' : '▼'}</span>
+      </div>
+      {open && (
+        <div className="s-card-body fade-up">
+          <div style={{ marginBottom: '.6rem', fontSize: '.72rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: s.color }}>
+            How they influence
+          </div>
+          <ul style={{ marginBottom: '1rem' }}>
+            {s.influences.map((inf, i) => <li key={i}>{inf}</li>)}
+          </ul>
+          <div style={{ marginBottom: '.6rem', fontSize: '.72rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--mid)' }}>
+            How they are influenced
+          </div>
+          <ul>
+            {s.influenced.map((inf, i) => <li key={i}>{inf}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [selectedLevel, setSelectedLevel] = useState(2);
+  const [tableView, setTableView] = useState('cards');
+
+  return (
+    <>
+      {/* HERO */}
+      <section id="hero">
+        <div className="hero-stripe" />
+        <div className="hero-bg-text">TESLA</div>
+        <div className="hero-content">
+          <div className="hero-eyebrow">Case Study · Autonomous Vehicles</div>
+          <h1>Designing<br/>Tesla<br/>Autopilot</h1>
+          <p>Who shapes autonomous vehicle technology — and who bears the risk? A stakeholder analysis of Tesla's driver assistance systems and the communities they affect.</p>
+          <div className="hero-stat-row">
+            <div className="hero-stat">
+              <div className="num">94%</div>
+              <div className="lbl">of crashes linked to human factors</div>
+            </div>
+            <div className="hero-stat">
+              <div className="num">36K+</div>
+              <div className="lbl">US traffic deaths in 2019</div>
+            </div>
+            <div className="hero-stat">
+              <div className="num">L2</div>
+              <div className="lbl">Tesla's current autonomy level</div>
+            </div>
+            <div className="hero-stat">
+              <div className="num">6</div>
+              <div className="lbl">key stakeholder groups</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* THE PROBLEM */}
+      <section id="problem" style={{ background: 'var(--white)' }}>
+        <div className="container">
+          <div className="sec-label">Section 01</div>
+          <h2 className="sec-title">What Is the Problem?</h2>
+          <p className="sec-body">
+            In 2019, the NHTSA documented 6.76 million traffic crashes in the US — resulting in 36,000+ deaths and 2.74 million injuries. Human error is the "critical reason" in an estimated 94% of cases, making driver behaviour the primary target for autonomous vehicle technology.
+          </p>
+          <hr className="rule"/>
+          <div className="problem-grid">
+            <div className="problem-card">
+              <div className="icon">🧠</div>
+              <h4>Human Factors</h4>
+              <p>Distraction, fatigue, poor judgment (speeding, misjudging lane changes), and steering overcorrections. The most prevalent cause and the most addressable by automation.</p>
+            </div>
+            <div className="problem-card">
+              <div className="icon">🔧</div>
+              <h4>Mechanical Factors</h4>
+              <p>Tire failures, brake malfunctions, and steering system faults. Modern sensor suites can detect some mechanical issues before the driver notices them.</p>
+            </div>
+            <div className="problem-card">
+              <div className="icon">🌫️</div>
+              <h4>Environmental Factors</h4>
+              <p>Fog, ice, poor road design, missing signage, and obstructions. Often interact with human factors — e.g., speed misjudgment in fog. A challenge for vision-only AI systems.</p>
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(204,0,0,.06)', border: '1px solid rgba(204,0,0,.15)', borderRadius: 10, padding: '1.4rem 1.8rem', fontSize: '.9rem', lineHeight: 1.8, color: 'var(--charcoal)' }}>
+            <strong style={{ color: 'var(--red)' }}>Phantom Traffic Jams:</strong> Even without accidents, human driving behaviour creates congestion. A single driver tapping the brakes on a crowded highway triggers a chain reaction — each following driver must brake harder, creating a stop-and-go ripple. Autonomous systems could eliminate this by coordinating smooth, consistent spacing.
+          </div>
+        </div>
+      </section>
+
+      {/* TECHNOLOGY */}
+      <section id="technology" style={{ background: 'var(--cream)' }}>
+        <div className="container">
+          <div className="sec-label">Section 02</div>
+          <h2 className="sec-title">The Proposed Solution</h2>
+          <p className="sec-body">Autonomous vehicles exist on a 6-level spectrum defined by the Society of Automotive Engineers. Tesla's Autopilot is classified as Level 2 for regulatory purposes — despite marketing names like "Full Self-Driving."</p>
+          <hr className="rule"/>
+
+          <div style={{ fontSize: '.72rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--mid)', marginBottom: '.8rem' }}>
+            Select a level to explore
+          </div>
+          <div className="levels-row">
+            {levels.map(l => (
+              <div key={l.num}
+                className={`level-col ${l.isTesla ? 'tesla-level' : ''} ${selectedLevel === l.num ? 'selected' : ''}`}
+                onClick={() => setSelectedLevel(l.num)}>
+                <div className="level-num" style={{ color: selectedLevel === l.num ? 'inherit' : l.color }}>{l.num}</div>
+                <div className="level-name">{l.name}</div>
+                {l.isTesla && selectedLevel !== l.num && <div style={{ fontSize: '.6rem', fontWeight: 700, letterSpacing: '.06em', color: 'var(--red)', marginTop: '.3rem' }}>← TESLA</div>}
+              </div>
+            ))}
+          </div>
+          {levelDetail[selectedLevel] && (
+            <div className="level-detail fade-up">
+              <strong>Level {selectedLevel} — {levels[selectedLevel].name}</strong>
+              {levels[selectedLevel].isTesla && <span className="level-badge">Tesla's Current Level</span>}
+              <p style={{ marginTop: '.5rem' }}>{levelDetail[selectedLevel]}</p>
+            </div>
+          )}
+
+          <div style={{ fontSize: '.72rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--mid)', marginBottom: '.8rem', marginTop: '.5rem' }}>
+            Tesla's Three Feature Tiers — click to expand
+          </div>
+          {tiers.map((t, i) => <FeatureTier key={i} tier={t} />)}
+
+          <div style={{ background: 'var(--ink)', borderRadius: 10, padding: '1.4rem 1.8rem', marginTop: '1.5rem', fontSize: '.88rem', lineHeight: 1.8, color: 'rgba(255,255,255,.65)' }}>
+            <strong style={{ color: 'var(--white)' }}>Tesla Vision vs. LIDAR:</strong> Unlike competitors (e.g., Google Waymo) who combine cameras, radar, and LIDAR for 3D mapping, Tesla uses a cameras-only approach. LIDAR critics at Tesla argue it is an unnecessary expense that sidesteps real visual recognition problems. However, cameras are limited to 2D data and perform poorly in low-light and fog — conditions where ultrasonic sensors (which Tesla removed in 2022) had an advantage.
+          </div>
+        </div>
+      </section>
+
+      {/* STAKEHOLDERS */}
+      <section id="stakeholders" style={{ background: 'var(--white)' }}>
+        <div className="container">
+          <div className="sec-label">Section 03 — Core Focus</div>
+          <h2 className="sec-title">Stakeholder Analysis</h2>
+          <p className="sec-body">A stakeholder is anyone who influences or is influenced by an engineering project. Tesla's Autopilot involves six distinct stakeholder groups — each with different interests, powers, and levels of risk.</p>
+          <hr className="rule"/>
+
+          <div className="tabs">
+            <button className={`tab ${tableView==='cards'?'active':''}`} onClick={() => setTableView('cards')}>Card View</button>
+            <button className={`tab ${tableView==='table'?'active':''}`} onClick={() => setTableView('table')}>Influence Matrix</button>
+          </div>
+
+          {tableView === 'cards' && (
+            <div className="stakeholder-grid fade-up">
+              {stakeholders.map((s, i) => <StakeholderCard key={i} s={s} />)}
+            </div>
+          )}
+
+          {tableView === 'table' && (
+            <div style={{ overflowX: 'auto' }} className="fade-up">
+              <table className="inf-table">
+                <thead>
+                  <tr>
+                    <th>Stakeholder</th>
+                    <th>Type</th>
+                    <th>How They Influence Tesla</th>
+                    <th>How They Are Influenced</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {influenceRows.map((r, i) => (
+                    <tr key={i}>
+                      <td className="sh-name">{r.name}</td>
+                      <td>
+                        <span className="type-pill" style={{
+                          background: typeColors[r.type]?.bg,
+                          color: typeColors[r.type]?.text
+                        }}>{r.type}</span>
+                      </td>
+                      <td>{r.over}</td>
+                      <td>{r.from}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Type legend */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.6rem', marginTop: '.5rem' }}>
+            {Object.entries(typeColors).map(([type, col]) => (
+              <span key={type} className="type-pill" style={{ background: col.bg, color: col.text }}>{type}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* REFLECT */}
+      <section id="reflect" style={{ background: 'var(--cream)' }}>
+        <div className="container">
+          <div className="sec-label">Section 04</div>
+          <h2 className="sec-title">Reflect</h2>
+          <p className="sec-body">Use the stakeholder framework to think critically about how power and risk are distributed in autonomous vehicle development.</p>
+          <hr className="rule"/>
+          <div className="reflect-box">
+            <h3>Discussion Questions</h3>
+            <ol>
+              <li>In what ways do Tesla's engineers have the power to influence other stakeholders? What factors — investor pressure, safety concerns, regulatory scrutiny — might inform their decision-making?</li>
+              <li>Beta testers generate the real-world data Tesla uses to improve its AI — yet unlike paid safety drivers at competitors, they assume personal risk. Is this arrangement ethical? Who should bear the cost of testing on public roads?</li>
+              <li>Other road users (pedestrians, cyclists, other drivers) share the road with beta-test vehicles without consenting to be part of the experiment. How should engineers account for bystanders who have no voice in the process?</li>
+              <li>California regulators alleged that the name "Full Self-Driving Mode" is fraudulent because the car requires driver supervision. How much does naming and marketing language matter when it comes to safety?</li>
+              <li>If Level 5 autonomy is eventually achieved, which stakeholder groups stand to benefit most — and which might be left behind or negatively affected?</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ background: 'var(--ink)', color: 'rgba(255,255,255,.35)', padding: '2rem 2.5rem', textAlign: 'center' }}>
+        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '1rem', color: 'rgba(255,255,255,.6)', marginBottom: '.4rem' }}>
+          Designing Autonomous Vehicles: A Case Study of Tesla Autopilot
+        </div>
+        <div style={{ fontSize: '.72rem', letterSpacing: '.08em' }}>
+          Based on Michigan Engineering · Center for Socially Engaged Design · First Author: Sara Hoffman
+        </div>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+/* NAV scroll highlight */
+const links = document.querySelectorAll('nav a[href^="#"]');
+const ids = ['hero','problem','technology','stakeholders','reflect'];
+window.addEventListener('scroll', () => {
+  const pos = window.scrollY + 70;
+  let cur = 'hero';
+  ids.forEach(id => { const el = document.getElementById(id); if (el && el.offsetTop <= pos) cur = id; });
+  links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+});
+</script>
+</body>
+</html>
